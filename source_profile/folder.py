@@ -2,7 +2,8 @@ import logging
 import tarfile
 import re
 from datetime import datetime
-from os.path import exists, join, abspath
+from os.path import exists, join, abspath, isdir, isfile
+import os
 
 LOG = logging.getLogger(__name__)
 API_VERSION = (1,0)
@@ -23,20 +24,75 @@ def run(staging_area):
       LOG.error("Path '%s' does not exist! Skipping!" % CONFIG['path'])
       return
 
+   if CONFIG.get("split", False):
+      create_split_tar(staging_area)
+   else:
+      create_simple_tar(staging_area)
+
+def create_split_tar(staging_area):
+   """
+   Creates one tar file for each folder found in CONFIG['path']. If normal
+   files reside in that folder, they will be collected into a special tarfile
+   named "__PICKUP_FILES__.tar.bz2"
+
+   @param staging_area: The target folder
+   """
+
+   if not isdir(CONFIG['path']):
+      LOG.error("Impossible to create a split tar! %s is not a folder!" % CONFIG['path'])
+      return
+
+   # Create the "container" folder inside the staging area
+   basename = get_basename()
+   container = join(staging_area, basename)
+   if not exists(container):
+      os.makedirs( container )
+   elif not isdir(container):
+      LOG.error("'%s' exists and is not a folder! Skipping" % container)
+      return
+
+   files = []
+   for entry in os.listdir(CONFIG['path']):
+      entrypath = join(CONFIG['path'], entry)
+
+      # Add directories directly, and add normal files into a special filename
+      if not isdir(entrypath):
+         files.append(entrypath)
+         continue
+
+      tarname = join(container, "%s.tar.bz2" % entry)
+      LOG.info("Writing to '%s'" % abspath(tarname))
+      tar = tarfile.open(abspath(tarname), "w:bz2")
+      tar.add(entrypath)
+      tar.close()
+
+   if files:
+      tarname = join(container, "__PICKUP_FILES__.tar.bz2")
+      LOG.info("Writing remaining files to '%s'" % abspath(tarname))
+      tar = tarfile.open(abspath(tarname), "w:bz2")
+      for file in files:
+         LOG.info("   Adding %s" % file)
+         tar.add(file)
+      tar.close()
+
+def get_basename():
    # create the desired filename
    now = datetime.now()
-   tarname = "%s-%s" % (
+   basename = "%s-%s" % (
          now.strftime("%Y-%m-%d"),
          re.sub( r'[^a-zA-Z0-9]', "_", SOURCE['name'] )
          )
 
    # prevent accidental overwrites
    counter = 0
-   while exists(tarname):
+   while exists(basename):
       counter += 1
-      LOG.debug( "File %s exists. Adding a counter." % tarname )
-      tarname = "%s-%d" % (tarname, counter)
-   tarname += ".tar.bz2"
+      LOG.debug( "File %s exists. Adding a counter." % basename )
+      basename = "%s-%d" % (basename, counter)
+   return basename
+
+def create_simple_tar(staging_area):
+   tarname = "%s.tar.bz2" % get_basename()
 
    # put it into the staging area
    tarname = join(staging_area, tarname)

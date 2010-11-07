@@ -45,7 +45,7 @@ SOURCES = [
       profile = 'folder',
       config = dict(
          path = '/var/www',
-         profile = 'web',
+         split = True,
          )
       ),
    dict(
@@ -53,7 +53,7 @@ SOURCES = [
       profile = 'folder',
       config = dict(
          path = '/var/git',
-         profile = 'default',
+         split = True,
          )
       ),
    dict(
@@ -75,7 +75,6 @@ SOURCES = [
       profile = 'folder',
       config = dict(
          path = '/home/exhuma',
-         # specifying no profile is equivalent to "profile = 'default'"
          )
       ),
    ]

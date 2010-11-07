@@ -28,6 +28,7 @@ from datetime import datetime, timedelta
 from os.path import exists, abspath
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
 LOG = logging.getLogger(__name__)
 
@@ -48,12 +49,18 @@ import target_profile
 EXPECTED_CONFIG_VERSION = (1,0)
 TERM = TerminalController()
 
-class OnlyInfoFilter(logging.Filter):
+class ReverseLevelFilter(logging.Filter):
    """
-   Filter out messages *above* a specific level.
+   Filter out messages *above* a specific level. (In other words: log only
+   messages *below* maxlevel)
    """
+
+   def __init__(self, maxlevel, *args, **kwargs):
+      logging.Filter.__init__(self, *args, **kwargs)
+      self.maxlevel = maxlevel
+
    def filter( self, record ):
-      if record.levelno <= logging.INFO:
+      if record.levelno <= self.maxlevel:
          return True
       else:
          return False
@@ -111,26 +118,39 @@ def setup_logging():
    LOG.setLevel(logging.DEBUG)
    err_format = logging.Formatter(TERM.RED + "%(asctime)s | %(name)s | %(levelname)s | %(message)s" + TERM.NORMAL)
    out_format = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
+
    stdout_handler = logging.StreamHandler(sys.stdout)
-   stdout_handler.setLevel(logging.DEBUG)
-   stdout_handler.addFilter( OnlyInfoFilter() )
+   stdout_handler.setLevel(logging.INFO)
+   stdout_handler.addFilter( ReverseLevelFilter(logging.INFO) )
    stdout_handler.setFormatter(out_format)
+
    stderr_handler = logging.StreamHandler(sys.stderr)
    stderr_handler.setLevel(logging.WARNING)
    stderr_handler.setFormatter(err_format)
+
+   if not exists("logs"):
+      os.makedirs("logs")
+   debug_handler = logging.handlers.RotatingFileHandler("logs/debug.log",
+         maxBytes=10000, backupCount=5)
+   debug_handler.setLevel(logging.DEBUG)
+   debug_handler.setFormatter(out_format)
+
    LOG.addHandler(stdout_handler)
    LOG.addHandler(stderr_handler)
+   LOG.addHandler(debug_handler)
 
    # plugin loggers
    src_log = logging.getLogger("source_profile")
    src_log.setLevel(logging.DEBUG)
    src_log.addHandler(stdout_handler)
    src_log.addHandler(stderr_handler)
+   src_log.addHandler(debug_handler)
 
    tgt_log = logging.getLogger("target_profile")
    tgt_log.setLevel(logging.DEBUG)
    tgt_log.addHandler(stdout_handler)
    tgt_log.addHandler(stderr_handler)
+   tgt_log.addHandler(debug_handler)
 
 def api_is_compatible(module, api_version):
    """
@@ -167,7 +187,7 @@ def stage(source):
    LOG.info( "Staging source %(name)s [%(profile)s]" % source )
    profile = None
    try:
-      profile = source_profile.create( source["profile"] )
+      profile = source_profile.create( source["profile"])
       if not api_is_compatible(profile, (1,0)):
          return
 
@@ -176,6 +196,13 @@ def stage(source):
             "Error message was: %s" % (source["profile"], exc) )
    if not profile:
       return
+
+   try:
+      profile.init(source)
+      profile.run(config.STAGING_AREA)
+   except Exception, exc:
+      LOG.error("Error staging '%s'. Error message: %s" % (source['name'], exc))
+      LOG.exception(exc)
 
 def push(target):
    """

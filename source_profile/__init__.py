@@ -1,11 +1,9 @@
-def create(plugname, **init_params):
+def create(plugname):
 
    if plugname in globals():
       module = reload(globals()[plugname])
-      module.init( **init_params )
       return module
 
    module = 'source_profile.%s' % plugname
    __import__(module)
-   globals()[plugname].init(**init_params)
    return globals()[plugname]

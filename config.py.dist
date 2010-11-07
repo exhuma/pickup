@@ -90,7 +90,7 @@ TARGETS = [
          # retention: how long is old data kept. The value is used as keyword
          # arguments dict for datetime.timedelta
          retention = timedelta(days=7),
-         folder = THE_BACKUP_DIR,
+         path = THE_BACKUP_DIR,
          ),
       ),
    dict(

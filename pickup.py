@@ -178,39 +178,35 @@ def api_is_compatible(module, api_version):
             ( module.__name__, minor, expected_minor))
    return True
 
-def stage(source):
+def run_profile(package, profile_config):
    """
-   Stage the source into the staging area
+   Run the source/target profile
 
-   @param source: The source profile (from the config)
+   @param package: The profile package
+   @param profile_config: The profile settings (from the config)
    """
-   LOG.info( "Staging source %(name)s [%(profile)s]" % source )
+
+   LOG.info("Running '%(name)s' [%(profile)s]" % profile_config )
+
    profile = None
    try:
-      profile = source_profile.create( source["profile"])
+      profile = package.create( profile_config["profile"])
       if not api_is_compatible(profile, (1,0)):
          return
 
    except ImportError, exc:
-      LOG.error( "Unable to instantiate source profile %s. "
-            "Error message was: %s" % (source["profile"], exc) )
+      LOG.error( "Unable to instantiate target profile %s. "
+            "Error message was: %s" % (profile_config["profile"], exc) )
    if not profile:
       return
 
    try:
-      profile.init(source)
+      profile.init(profile_config)
       profile.run(config.STAGING_AREA)
    except Exception, exc:
-      LOG.error("Error staging '%s'. Error message: %s" % (source['name'], exc))
+      LOG.error("Error staging '%s'. Error message: %s" %
+            (profile_config['name'], exc))
       LOG.exception(exc)
-
-def push(target):
-   """
-   Push the staging area onto a target
-
-   @param target: The target (from the config)
-   """
-   LOG.info("Pushing to '%(name)s' [%(profile)s]" % target )
 
 def init():
    if not exists(config.STAGING_AREA):
@@ -226,11 +222,11 @@ def main():
    now = datetime.now()
    LOG.info("Fetching sources")
    for source in config.SOURCES:
-      stage(source)
+      run_profile(source_profile, source)
 
    LOG.info("Pushing to targets")
    for target in config.TARGETS:
-      push(target)
+      run_profile(target_profile, target)
 
 if __name__ == "__main__":
    setup_logging()

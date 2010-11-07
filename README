@@ -20,12 +20,12 @@ IMPLEMENTED
 ===========
 
   - Folder backups (split and simple)
+  - Push to folder
 
 TODO (in order of importance)
 =============================
 
- - Push to folder
- - Backup PostgreSQL
- - Backup MySQL
- - Push to FTP
- - Push to rsync
+  - Backup PostgreSQL
+  - Backup MySQL
+  - Push to FTP
+  - Push to rsync

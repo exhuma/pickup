@@ -15,3 +15,17 @@ mails?)
 
 Currently the logging config is hardcoded. That may change (but it's not on top
 of the priority list).
+
+IMPLEMENTED
+===========
+
+  - Folder backups (split and simple)
+
+TODO (in order of importance)
+=============================
+
+ - Push to folder
+ - Backup PostgreSQL
+ - Backup MySQL
+ - Push to FTP
+ - Push to rsync

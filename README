@@ -13,6 +13,11 @@ This is useful for cron jobs: redirecting stdout to /dev/null still lets
 important messages through, so cron can take the appropriate steps (send
 mails?)
 
+Debugging messages are logged to a auto-rotating file inside the "logs"
+directory. This provides some semi-persistent storage. If something went wrong
+and you redirected stdout (or deleted the cron-mails), you still may find some
+useful info in that file.
+
 Currently the logging config is hardcoded. That may change (but it's not on top
 of the priority list).
 
@@ -21,11 +26,13 @@ IMPLEMENTED
 
   - Folder backups (split and simple)
   - Push to folder
+  - Backup PostgreSQL
 
 TODO (in order of importance)
 =============================
 
-  - Backup PostgreSQL
+  - Docs
   - Backup MySQL
   - Push to FTP
+  - Remove old files (using the retention value)
   - Push to rsync

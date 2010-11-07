@@ -38,6 +38,9 @@ SOURCES = [
       name = 'PostgreSQL 8.4',
       profile = 'postgres',
       config = dict(
+         host = 'localhost',
+         database = '*', # using '*' will dump all dbs
+         port = 5432
          ),
       ),
    dict(

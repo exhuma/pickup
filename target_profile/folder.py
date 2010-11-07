@@ -1,3 +1,16 @@
+"""
+Creates a subfolder with the current data in the target folder and copies
+everything inside the staging area into that folder
+
+Configuration
+~~~~~~~~~~~~~
+
+The following fields are used by this plugin:
+
+   **path**
+      The target folder
+"""
+
 from datetime import datetime
 from os.path import exists, join
 from shutil import copytree

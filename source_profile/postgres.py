@@ -1,60 +1,69 @@
 """
-DESCRIPTION
-===========
-
-This module will dump the databases running pg_dump. The output will be run
-through bzip2.
+This module will dump the databases running ``pg_dump`. The output will be run
+through ``bzip2``.
 
 Prerequisites
--------------
+~~~~~~~~~~~~~
 
-   - psycopg2
+   - ``psycopg2`` must be installed
 
-Detecting all available databases
-=================================
+Configuration
+~~~~~~~~~~~~~
 
-In order for the wildcard "*" to work in the config file, the user must be able
-to connect to "template1" and must have read access to the system table
-"pg_database".
+The following fields are used by this plugin:
+
+   **host**
+      The host on which the database is running
+
+   **port**
+      The port on which the database is running
+
+   **database**
+      The database to backup. This can be ``'*'`` to backup all databases
+      (excluding ``template0``, ``template1`` and ``postgres``)
+
+      .. note:: In order for the wildcard ``"*"`` to work in the config file,
+                the user must be able to connect to "template1" and must have
+                read access to the system table "pg_database".
 
 A note on passwords
-===================
+~~~~~~~~~~~~~~~~~~~
 
 Unfortunately, there are problems with the way pg_dump prompts for passwords.
 So connecting automatically is best possible using the available postgres
-methods. The easiest to set up while being more secure than simple "trust"
-connections is the ".~/pgpass" file.
+methods. The easiest to set up while being more secure than simple ``trust``
+connections is the ``.~/pgpass`` file.
 
-NOTE: It's not recommended to use "trust" connections. For example, assume the
-following conditions are met:
+.. warning:: It's not recommended to use "trust" connections. For example,
+          assume the following conditions are met:
 
-   - A user has shell access
-   - The pg_hba.conf file allows trust connections for the user postgres on
-     local connections (a common setup).
+            - A user has shell access
+            - The ``pg_hba.conf`` file allows trust connections for the user
+              postgres on local connections (a common setup).
 
-Then all the user needs to do is run the following command:
+          Then all the user needs to do is run the following command::
 
-   $ psql -U postgres <dbname>
+             $ psql -U postgres <dbname>
 
-to get access to the system! Using a ~/.pgpass file allows for convenient
-passwordless connections (as used by this script), while being a lot more
-secure than trust connections. Just keep in mind to set a chmod 600 on that
-file!
+          to get access to the system! Using a ~/.pgpass file allows for
+          convenient passwordless connections (as used by this script), while
+          being a lot more secure than trust connections. Just keep in mind to
+          set a chmod 600 on that file!
 
 Here's a copy of the relevant docs:
 
-> The file .pgpass in a user's home directory is a file that can contain
-> passwords to be used if the connection requires a password (and no password
-> has been specified otherwise). This file should have lines of the following
-> format:
->
-> hostname:port:database:username:password
->
-> Each of the first four fields may be a literal value, or *, which matches
-> anything. The password field from the first line that matches the current
-> connection parameters will be used. (Therefore, put more-specific entries
-> first when you are using wildcards.) If an entry needs to contain : or \,
-> escape this character with \.
+   The file ``.pgpass`` in a user's home directory is a file that can contain
+   passwords to be used if the connection requires a password (and no password
+   has been specified otherwise). This file should have lines of the following
+   format::
+
+      hostname:port:database:username:password
+
+   Each of the first four fields may be a literal value, or ``*``, which
+   matches anything. The password field from the first line that matches the
+   current connection parameters will be used. (Therefore, put more-specific
+   entries first when you are using wildcards.) If an entry needs to contain
+   ``:`` or ``\``, escape this character with ``\``.
 """
 
 import logging

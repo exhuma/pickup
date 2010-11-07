@@ -1,3 +1,21 @@
+"""
+The folder plugin create a bzipped tar file for a specific folder. It is also
+possible to specify a parent folder and create individual tarballs for each
+folder and one for files beneath that folder.
+
+Configuration
+~~~~~~~~~~~~~
+
+The following fields are used by this plugin:
+
+   **path** (string)
+      The folder
+
+   **split** (boolean) *optional*
+      If set to "True", this module will create individual tarballs (Default =
+      False).
+
+"""
 import logging
 import tarfile
 import re

@@ -24,10 +24,12 @@ def run(staging_area):
       LOG.error("Path '%s' does not exist! Skipping!" % CONFIG['path'])
       return
 
+   module_name = __name__.split(".")[-1]
+
    if CONFIG.get("split", False):
-      create_split_tar(staging_area)
+      create_split_tar(join(staging_area, module_name))
    else:
-      create_simple_tar(staging_area)
+      create_simple_tar(join(staging_area, module_name))
 
 def create_split_tar(staging_area):
    """

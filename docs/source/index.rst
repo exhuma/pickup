@@ -8,6 +8,9 @@ Pickup
 
 Pickup is a **modular backup script** written completely in Python.
 
+The source code is available on `the github project page
+<https://github.com/exhuma/pickup>`_
+
 The core of the application is the executable ``pickup.py`` and the config file
 ``config.py``.  This core does not include *any* code related as to *how* a
 backup from a given source should be created. This logic is stashed away in

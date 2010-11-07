@@ -1,5 +1,5 @@
 """
-This module will dump the databases running ``pg_dump`. The output will be run
+This module will dump the databases running ``pg_dump``. The output will be run
 through ``bzip2``.
 
 Prerequisites

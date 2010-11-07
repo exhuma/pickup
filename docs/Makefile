@@ -36,8 +36,10 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 
-html:
+html: clean
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	sphinxtogithub build/html
+	rsync --delete --exclude .git -av build/html/ ../../pickup_docs
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

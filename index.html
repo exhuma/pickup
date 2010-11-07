@@ -1,1 +1,162 @@
-My GitHub Page
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pickup &mdash; pickup v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.0 documentation" href="#" />
+    <link rel="next" title="Configuration" href="configuration.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pickup">
+<h1>Pickup<a class="headerlink" href="#pickup" title="Permalink to this headline">¶</a></h1>
+<p>Pickup is a <strong>modular backup script</strong> written completely in Python.</p>
+<p>The core of the application is the executable <tt class="docutils literal"><span class="pre">pickup.py</span></tt> and the config file
+<tt class="docutils literal"><span class="pre">config.py</span></tt>.  This core does not include <em>any</em> code related as to <em>how</em> a
+backup from a given source should be created. This logic is stashed away in
+modules. This has the advantage that it&#8217;s very easy to add support for a new
+&#8220;data source&#8221; or to change the behaviour of an existing component.</p>
+<p>The backup target is created in the exact same way. For the exact same reason.
+The only drawback, is that backups need to be created in a &#8220;staging area&#8221; first
+before they are deployed to a target. This is done because some targets (like
+rsync) work best if you can feed them one folder containing everything. It
+would be a waste to run rsync on each file separately.</p>
+<p>Another advantage of the modular design is backwards compatibility. The core
+should do a fairly good job with that. I&#8217;ll take a leap of faith and say, it
+should work with Python 2.3. Maybe even 2.2, but I haven&#8217;t checked. The modules
+themselves are another story. Some modules may require third-party modules (for
+example: the postgres module requires psycopg2) and may not be as backwards
+compatible.</p>
+<p>Everything that is currently available should work fine with Python 2.3 and up.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#basic-example">Basic example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#required-values">Required values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#advanced-example">Advanced Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="available_plugins.html">Available Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="available_plugins.html#sources">Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_plugins.html#targets">Targets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="writing_plugins.html">Writing Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#general-housekeeping">General housekeeping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#configuration-values">Configuration Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#writing-source-plugins">Writing Source Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#writing-target-plugins">Writing Target Plugins</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pickup</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuration</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >next</a> |</li>
+        <li><a href="#">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

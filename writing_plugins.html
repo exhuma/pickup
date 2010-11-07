@@ -1,0 +1,246 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Writing Plugins &mdash; pickup v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Available Plugins" href="available_plugins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="available_plugins.html" title="Available Plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="writing-plugins">
+<span id="id1"></span><h1>Writing Plugins<a class="headerlink" href="#writing-plugins" title="Permalink to this headline">¶</a></h1>
+<p>You can do pretty much anything with these plugins. As you can chain multiple
+sources or targets, nothing holds you back for writing a plugin that won&#8217;t
+create real backups. This might sound useless, but, you could for example write
+a source plugin which lists all files in a folder, and save that list in the
+staging area. This won&#8217;t be a valid backup of the data, but may prove useful
+nonetheless.</p>
+<p>Both source and target plugins follow the same standard. In a nutshell:</p>
+<blockquote>
+<ul class="simple">
+<li>A &#8220;init&#8221; function initialises the plugin. This is called for each
+source/target</li>
+<li>A &#8220;run&#8221; function performs the actual job of creating/publishing the backup</li>
+<li>A source plugin is resposible to create backup files inside the &#8220;staging
+area&#8221;.</li>
+<li>A target plugin is responsible to publish/push the files inside the
+staging area to another location.</li>
+</ul>
+</blockquote>
+<div class="section" id="general-housekeeping">
+<h2>General housekeeping<a class="headerlink" href="#general-housekeeping" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>The config file used by the end-users strongly depends on the config values
+used in the plugins. As such, it would be very nice if these values are well
+documented. The project used the module level docstrings in the auto-generated
+documentation (the one you are reading just now). So everything needed to setup
+the pluigin should be documented there.</p>
+</div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>Avoid <tt class="docutils literal"><span class="pre">print</span></tt> statements at all costs. <em>Especially</em> for error messages. The
+proper way to print output is to use the logging module. Everything related to
+logging is configured for you in the core. So all you need to do is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then make the appropriate calls to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">the_exception_instance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api-version">
+<h3>API version<a class="headerlink" href="#api-version" title="Permalink to this headline">¶</a></h3>
+<p>Before executing a plugin, the core checks the API version against it was
+developed. If the core changes, and if, as a consequence, changes are necessary
+or recommended in the plugin, the application will let you know:</p>
+<blockquote>
+<ul class="simple">
+<li>Plugin execution is aborted for major changes</li>
+<li>Warnings are issued for minor changes</li>
+</ul>
+</blockquote>
+<p>The version information needs to be defined in a field named <tt class="docutils literal"><span class="pre">API_VERSION</span></tt>
+and must be a tuple of (major_number, minor_number).</p>
+</div>
+<div class="section" id="example-minimal-setup">
+<h3>Example minimal setup<a class="headerlink" href="#example-minimal-setup" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the module-level docstring</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">API_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">source_dict</span><span class="p">):</span>
+   <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Hello, I was initialised with </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">source_dict</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">staging_area</span><span class="p">):</span>
+   <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Running on </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">staging_area</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="configuration-values">
+<h2>Configuration Values<a class="headerlink" href="#configuration-values" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="init">
+<h3>init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
+<p>The core will pass a dictionary to the <tt class="docutils literal"><span class="pre">init</span></tt> method before executing <tt class="docutils literal"><span class="pre">run</span></tt>.
+This dictionary is the same as the one specified in the config file. So, for
+example if a source (or target) is configured as follows:</p>
+<div class="highlight-python"><pre>[ ...,
+dict(
+   name = "mysource",
+   profile = "my_plugin_module",
+   config = dict(
+      a = 1,
+      b = 2
+      )
+   ),
+  ... ]</pre>
+</div>
+<p>Then the dictionary passed to the <tt class="docutils literal"><span class="pre">init</span></tt> method will be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run">
+<h3>run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
+<p>When executing <tt class="docutils literal"><span class="pre">run</span></tt>, the core will pass the folder name of the &#8220;staging area&#8221;.</p>
+</div>
+</div>
+<div class="section" id="writing-source-plugins">
+<h2>Writing Source Plugins<a class="headerlink" href="#writing-source-plugins" title="Permalink to this headline">¶</a></h2>
+<p>A source plugin represents a type of data that needs to be included in the
+backup. After calling <tt class="docutils literal"><span class="pre">run</span></tt>, the plugin must have created a file inside the
+staging area. Otherwise the backup will be lost.</p>
+</div>
+<div class="section" id="writing-target-plugins">
+<h2>Writing Target Plugins<a class="headerlink" href="#writing-target-plugins" title="Permalink to this headline">¶</a></h2>
+<p>A target plugin represents a destination into which the backups will be
+&#8220;published&#8221; (or &#8220;pushed&#8221;). The <tt class="docutils literal"><span class="pre">run</span></tt> method receives the &#8220;staging area&#8221; as
+parameter. At the end of the run, all files inside that folder should be in the
+target location (as specified in the config).</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Writing Plugins</a><ul>
+<li><a class="reference internal" href="#general-housekeeping">General housekeeping</a><ul>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#api-version">API version</a></li>
+<li><a class="reference internal" href="#example-minimal-setup">Example minimal setup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration-values">Configuration Values</a><ul>
+<li><a class="reference internal" href="#init">init</a></li>
+<li><a class="reference internal" href="#run">run</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-source-plugins">Writing Source Plugins</a></li>
+<li><a class="reference internal" href="#writing-target-plugins">Writing Target Plugins</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="available_plugins.html"
+                        title="previous chapter">Available Plugins</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/writing_plugins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="available_plugins.html" title="Available Plugins"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

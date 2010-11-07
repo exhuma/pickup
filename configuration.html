@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; pickup v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Pickup" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Pickup"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>The configuration file is a python file itself. All values are stored as simple
+python dictionaries or variables.</p>
+<div class="section" id="basic-example">
+<h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
+<p>In its most simple form, a config file to
+backup one folder could look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
+<span class="n">SOURCES</span> <span class="o">=</span> <span class="p">[{</span>
+      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;/var/www&#39;</span><span class="p">,</span>
+      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&#39;/var/www&#39;</span><span class="p">,</span>
+         <span class="s">&#39;split&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+         <span class="p">}}]</span>
+
+<span class="n">TARGETS</span> <span class="o">=</span> <span class="p">[{</span>
+      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
+      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&quot;folder&quot;</span><span class="p">,</span>
+      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&quot;/path/to/target&quot;</span><span class="p">,</span>
+         <span class="p">}}]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="required-values">
+<h2>Required values<a class="headerlink" href="#required-values" title="Permalink to this headline">¶</a></h2>
+<p>The following values must be specified:</p>
+<dl class="docutils">
+<dt><strong>CONFIG_VERSION</strong></dt>
+<dd><p class="first">This is used by the core application to determine if it knows how to read
+the config file. If this value is incorrect, the core will issue
+errors/warnings.</p>
+<p>The value is a tuple representing a major and minor number.</p>
+<p>It follows the following rule:</p>
+<blockquote class="last">
+<ul class="simple">
+<li>If an application change <em>requires</em> a change in the config, the major
+number will increase.</li>
+<li>If a change is made in the application which will still be able to
+function with an old config version, but may benefit from new fields,
+then the minor number will increase.</li>
+</ul>
+</blockquote>
+</dd>
+<dt><strong>STAGING_AREA</strong></dt>
+<dd>A <em>temporary</em> folder. All backup files will be created in that folder before
+pushed into the targets.</dd>
+<dt><strong>SOURCES</strong></dt>
+<dd><p class="first">A list of backup sources. The sources will be processed in the same order as
+they appear in the config file. Each source must have the following fields:</p>
+<blockquote class="last">
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">name</span></tt></dt>
+<dd>The name of the source (Mainly used to display it in the logs)</dd>
+<dt><tt class="docutils literal"><span class="pre">profile</span></tt></dt>
+<dd>Definition of the nature of the source. Can be a folder, database, or
+anything supported by the underlying source plugins.</dd>
+<dt><tt class="docutils literal"><span class="pre">config</span></tt></dt>
+<dd>Config values for the source profile. These fields depend on the
+underlying plugin.</dd>
+</dl>
+</blockquote>
+</dd>
+<dt><strong>TARGETS</strong></dt>
+<dd><p class="first">A list of backup targets. The targets will be processed in the same order as
+they appear in the config file. Each source must have the following fields:</p>
+<blockquote class="last">
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">name</span></tt></dt>
+<dd>The name of the target (Mainly used to display it in the logs)</dd>
+<dt><tt class="docutils literal"><span class="pre">profile</span></tt></dt>
+<dd>Definition of the nature of the target. Can be a folder, ftp, or
+anything supported by the underlying target plugins.</dd>
+<dt><tt class="docutils literal"><span class="pre">config</span></tt></dt>
+<dd>Config values for the target profile. These fields depend on the
+underlying plugin.</dd>
+</dl>
+</blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="advanced-example">
+<h2>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h2>
+<p>As the config file is a python script, you can do pretty much everything you
+want inside. The main differences are:</p>
+<blockquote>
+<ul class="simple">
+<li>Use of comments</li>
+<li>example use of an import</li>
+<li>A string replacement is used in the <tt class="docutils literal"><span class="pre">rsync</span></tt> target</li>
+<li>Instead of writing dictionaries using the <tt class="docutils literal"><span class="pre">{</span></tt> and <tt class="docutils literal"><span class="pre">}</span></tt> syntax, they are
+constructed using the <tt class="docutils literal"><span class="pre">dict()</span></tt> builtin. This makes it easier to write
+(and maybe even to read as well).</li>
+</ul>
+</blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Not all source and target plugins listed in the following config file are
+available yet!</p>
+</div>
+<p>Advanced config file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="c"># Config version (major, minor)</span>
+<span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c"># A custom variable. Not used by the application itself, but used here, in</span>
+<span class="c"># the config script!</span>
+<span class="n">THE_BACKUP_DIR</span> <span class="o">=</span> <span class="s">&quot;/var/backups/data&quot;</span>
+
+<span class="c"># All backups will be created in this folder before being deployed to the</span>
+<span class="c"># targets</span>
+<span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
+
+<span class="c"># Backup Sources. They will be processed in order</span>
+<span class="c">#</span>
+<span class="c"># Details on the config values should be documented in the source modules</span>
+<span class="n">SOURCES</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;MySQL&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;mysql&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="c"># user should have full priviledges on everything</span>
+         <span class="n">user</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="p">,</span>
+         <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;mysecretpassword&quot;</span>
+         <span class="p">),</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;PostgreSQL 8.4&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;postgres&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">host</span> <span class="o">=</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+         <span class="n">database</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="c"># using &#39;*&#39; will dump all dbs</span>
+         <span class="n">port</span> <span class="o">=</span> <span class="mi">5432</span>
+         <span class="p">),</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/var/www&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/var/www&#39;</span><span class="p">,</span>
+         <span class="n">split</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/var/git&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/var/git&#39;</span><span class="p">,</span>
+         <span class="n">split</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/var/mail&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/var/mail&#39;</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/etc/apache2&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/etc/apache2&#39;</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;/home/exhuma&#39;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/home/exhuma&#39;</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="p">]</span>
+
+<span class="c"># Backup targets. They will be processed in order.</span>
+<span class="c">#</span>
+<span class="c"># Details on the config values should be documented in the target modules</span>
+<span class="n">TARGETS</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;folder&quot;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="c"># retention: how long is old data kept. The value is used as keyword</span>
+         <span class="c"># arguments dict for datetime.timedelta</span>
+         <span class="n">retention</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+         <span class="n">path</span> <span class="o">=</span> <span class="n">THE_BACKUP_DIR</span><span class="p">,</span>
+         <span class="p">),</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;rsync&quot;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;rsync&quot;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">ssh_key</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/id_dsa&quot;</span> <span class="o">%</span> <span class="n">THE_BACKUP_DIR</span><span class="p">,</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+   <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;ftp&quot;</span><span class="p">,</span>
+      <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;ftp&quot;</span><span class="p">,</span>
+      <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+         <span class="n">host</span><span class="o">=</span><span class="s">&quot;my.ftp.host&quot;</span><span class="p">,</span>
+         <span class="n">username</span><span class="o">=</span><span class="s">&quot;ftpuser&quot;</span><span class="p">,</span>
+         <span class="n">password</span><span class="o">=</span><span class="s">&quot;asis! Light!&quot;</span><span class="p">,</span>
+         <span class="n">remote_folder</span><span class="o">=</span><span class="s">&quot;backups&quot;</span><span class="p">,</span>
+         <span class="n">retention</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+         <span class="p">)</span>
+      <span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#basic-example">Basic example</a></li>
+<li><a class="reference internal" href="#required-values">Required values</a></li>
+<li><a class="reference internal" href="#advanced-example">Advanced Example</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Pickup</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Pickup"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

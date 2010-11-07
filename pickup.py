@@ -131,7 +131,7 @@ def setup_logging():
    if not exists("logs"):
       os.makedirs("logs")
    debug_handler = logging.handlers.RotatingFileHandler("logs/debug.log",
-         maxBytes=10000, backupCount=5)
+         maxBytes=100000, backupCount=5)
    debug_handler.setLevel(logging.DEBUG)
    debug_handler.setFormatter(out_format)
 

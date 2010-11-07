@@ -1,0 +1,8 @@
+Modular backup script written in python
+
+The config file specifies what to backup, and where to store it. The sources
+and targets are defined in python modules inside source_profiles and
+target_profiles.
+
+These plugins are dynamically loaded. No change in the main application code is
+needed to create a new source/target and use it in the config.

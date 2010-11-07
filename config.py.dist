@@ -1,0 +1,116 @@
+"""
+Example config file.
+
+The config is a standard python script. This will give you the full power of
+python to set the different varaiables. Examples are:
+
+   - The use of the timedelta class
+   - Variable replacement with THE_BACKUP_DIR
+"""
+
+
+from datetime import timedelta
+
+# Config version (major, minor)
+CONFIG_VERSION = (1,0)
+
+# A custom variable. Not used by the application itself, but used here, in the config script!
+THE_BACKUP_DIR = "/var/backups/data"
+
+# All backups will be created in this folder before being deployed to the
+# targets
+STAGING_AREA = "staging"
+
+# Backup Sources. They will be processed in order
+#
+# Details on the config values should be documented in the source modules
+SOURCES = [
+   dict(
+      name = 'MySQL',
+      profile = 'mysql',
+      config = dict(
+         # user should have full priviledges on everything
+         user = "root",
+         password = "mysecretpassword"
+         ),
+      ),
+   dict(
+      name = 'PostgreSQL 8.4',
+      profile = 'postgres',
+      config = dict(
+         ),
+      ),
+   dict(
+      name = '/var/www',
+      profile = 'folder',
+      config = dict(
+         path = '/var/www',
+         profile = 'web',
+         )
+      ),
+   dict(
+      name = '/var/git',
+      profile = 'folder',
+      config = dict(
+         path = '/var/git',
+         profile = 'default',
+         )
+      ),
+   dict(
+      name = '/var/mail',
+      profile = 'folder',
+      config = dict(
+         path = '/var/mail',
+         )
+      ),
+   dict(
+      name = '/etc/apache2',
+      profile = 'folder',
+      config = dict(
+         path = '/etc/apache2',
+         )
+      ),
+   dict(
+      name = '/home/exhuma',
+      profile = 'folder',
+      config = dict(
+         path = '/home/exhuma',
+         # specifying no profile is equivalent to "profile = 'default'"
+         )
+      ),
+   ]
+
+# Backup targets. They will be processed in order.
+#
+# Details on the config values should be documented in the target modules
+TARGETS = [
+   dict(
+      name = "local",
+      profile = "folder",
+      config = dict(
+         # retention: how long is old data kept. The value is used as keyword
+         # arguments dict for datetime.timedelta
+         retention = timedelta(days=7),
+         folder = THE_BACKUP_DIR,
+         ),
+      ),
+   dict(
+      name = "rsync",
+      profile = "rsync",
+      config = dict(
+         ssh_key = "%s/id_dsa" % THE_BACKUP_DIR,
+         )
+      ),
+   dict(
+      name = "ftp",
+      profile = "ftp",
+      config = dict(
+         host="my.ftp.host",
+         username="ftpuser",
+         password="asis! Light!",
+         remote_folder="backups",
+         retention = timedelta(days=20),
+         )
+      ),
+]
+

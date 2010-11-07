@@ -1,8 +1,17 @@
 Modular backup script written in python
 
 The config file specifies what to backup, and where to store it. The sources
-and targets are defined in python modules inside source_profiles and
+and targets are defined in python module inside source_profile and
 target_profiles.
 
 These plugins are dynamically loaded. No change in the main application code is
 needed to create a new source/target and use it in the config.
+
+Application output uses the default python logging module. All informational
+messages are routed to stdout, and all errors/warnings are routed to stderr.
+This is useful for cron jobs: redirecting stdout to /dev/null still lets
+important messages through, so cron can take the appropriate steps (send
+mails?)
+
+Currently the logging config is hardcoded. That may change (but it's not on top
+of the priority list).

@@ -68,11 +68,11 @@ IMPLEMENTED
   - Push to folder
   - Backup PostgreSQL
   - Docs
+  - Backup MySQL
 
 TODO (in order of importance)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - Backup MySQL
   - Push to FTP
   - Remove old files (using the retention value)
   - Push to rsync

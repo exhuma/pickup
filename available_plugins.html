@@ -363,6 +363,44 @@ everything inside the staging area into that folder</p>
 </div>
 </div>
 </div>
+<div class="section" id="module-target_profile.ftp">
+<span id="ftp"></span><h3>ftp<a class="headerlink" href="#module-target_profile.ftp" title="Permalink to this headline">¶</a></h3>
+<p>Uploads the staging folder to an FTP host. On the remote host a new subfolder
+with the current date will be created (f.ex.: &#8216;2010-11-01&#8217;). The staging area
+will be stored in that folder.</p>
+<div class="section" id="id13">
+<h4>Configuration<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<p>The following fields are used by this plugin:</p>
+<blockquote>
+<dl class="docutils">
+<dt><strong>host</strong> (string)</dt>
+<dd>The FTP hostname</dd>
+<dt><strong>username</strong> (string)</dt>
+<dd>The username</dd>
+<dt><strong>password</strong> (string)</dt>
+<dd>The password for the user</dd>
+<dt><strong>remote_folder</strong> (string) <em>optional</em></dt>
+<dd>If specified, the backups will be rooted in this folder. If not
+specified, the backups will be created on the default folder.</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section" id="id14">
+<h4>Configuration Example<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
+   <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;my ftp host&quot;</span><span class="p">,</span>
+   <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;ftp&quot;</span><span class="p">,</span>
+   <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">host</span><span class="o">=</span><span class="s">&quot;ftp.myhost.net&quot;</span><span class="p">,</span>
+      <span class="n">username</span><span class="o">=</span><span class="s">&quot;itsame&quot;</span><span class="p">,</span>
+      <span class="n">password</span><span class="o">=</span><span class="s">&quot;maario&quot;</span><span class="p">,</span>
+      <span class="n">remote_folder</span><span class="o">=</span><span class="s">&quot;tube/coins&quot;</span><span class="p">,</span>
+      <span class="p">)</span>
+   <span class="p">),</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 
@@ -406,6 +444,11 @@ everything inside the staging area into that folder</p>
 <li><a class="reference internal" href="#id10">folder</a><ul>
 <li><a class="reference internal" href="#id11">Configuration</a></li>
 <li><a class="reference internal" href="#id12">Configuration Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-target_profile.ftp">ftp</a><ul>
+<li><a class="reference internal" href="#id13">Configuration</a></li>
+<li><a class="reference internal" href="#id14">Configuration Example</a></li>
 </ul>
 </li>
 </ul>

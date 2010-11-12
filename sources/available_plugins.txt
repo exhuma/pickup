@@ -29,3 +29,7 @@ folder
 ~~~~~~
 .. automodule:: target_profile.folder
 
+ftp
+~~~
+.. automodule:: target_profile.ftp
+

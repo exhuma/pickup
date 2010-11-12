@@ -1,5 +1,12 @@
 .. _writing_plugins:
 
+Using Plugins
+=============
+
+The core uses the plugin filename as profile name. So if you create a new
+plugin named ``foobar.py``, then you can use it in the config file as ``profile
+= "foobar"``. It's as simple as that.
+
 Writing Plugins
 ===============
 
@@ -33,7 +40,13 @@ The config file used by the end-users strongly depends on the config values
 used in the plugins. As such, it would be very nice if these values are well
 documented. The project used the module level docstrings in the auto-generated
 documentation (the one you are reading just now). So everything needed to setup
-the pluigin should be documented there.
+the plugin should be documented there.
+
+It is recommended to add a code-block depicting an example configuration
+section for the module. This will make the generated documentation easier to
+read and will provide simple copy/paste templates to users.
+
+Look at the available module's source code for examples.
 
 Logging
 ~~~~~~~

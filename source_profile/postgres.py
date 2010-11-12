@@ -26,6 +26,21 @@ The following fields are used by this plugin:
                 the user must be able to connect to "template1" and must have
                 read access to the system table "pg_database".
 
+Configuration Example
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   dict(
+      name = 'PostgreSQL 8.4',
+      profile = 'postgres',
+      config = dict(
+         host = 'localhost',
+         database = '*', # using '*' will dump all dbs
+         port = 5432
+         ),
+      ),
+
 A note on passwords
 ~~~~~~~~~~~~~~~~~~~
 
@@ -74,7 +89,6 @@ import os
 
 LOG = logging.getLogger(__name__)
 API_VERSION = (1,0)
-MODULE_NAME = __name__.split(".")[-1]
 CONFIG = {}
 SOURCE = {}
 
@@ -105,14 +119,13 @@ def dump_one_db(staging_area, dbname):
       '-Ft',
       dbname ]
 
-   target_folder = join(staging_area, MODULE_NAME)
-   if not exists(target_folder):
-      os.makedirs(target_folder)
-      LOG.info("%s created" % abspath(target_folder))
+   if not exists(staging_area):
+      os.makedirs(staging_area)
+      LOG.info("%s created" % abspath(staging_area))
 
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
    p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
-      join(target_folder, "%s.tar.bz2" % dbname), "wb"), stderr=PIPE )
+      join(staging_area, "%s.tar.bz2" % dbname), "wb"), stderr=PIPE )
 
    p2.wait()
 

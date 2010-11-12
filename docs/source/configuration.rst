@@ -4,7 +4,10 @@ Configuration
 =============
 
 The configuration file is a python file itself. All values are stored as simple
-python dictionaries or variables.
+python dictionaries or variables. This page explains the general configuration
+structure. Each module may provide additioanl configuration options. They can
+be defined in each module's ``config`` dictionary. The details for each of
+these module-level configs can be found in :ref:`available_plugins`.
 
 Basic example
 -------------
@@ -86,6 +89,10 @@ The following values must be specified:
 
 Advanced Example
 ----------------
+
+.. note::
+   Not all profiles shown in this example exist yet! It's mainly an example of
+   how things *could* look like.
 
 As the config file is a python script, you can do pretty much everything you
 want inside. The main differences are:

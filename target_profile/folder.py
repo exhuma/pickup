@@ -9,6 +9,20 @@ The following fields are used by this plugin:
 
    **path**
       The target folder
+
+Configuration Example
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   dict(
+      name = "local",
+      profile = "folder",
+      config = dict(
+         path = "/var/backups",
+         ),
+      ),
+
 """
 
 from datetime import datetime

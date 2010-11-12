@@ -15,6 +15,19 @@ The following fields are used by this plugin:
       If set to "True", this module will create individual tarballs (Default =
       False).
 
+Configuration Example
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   dict(
+      name = 'My home folder',
+      profile = 'folder',
+      config = dict(
+         path = '/home/me',
+         split = True,
+         )
+      ),
 """
 import logging
 import tarfile
@@ -42,12 +55,10 @@ def run(staging_area):
       LOG.error("Path '%s' does not exist! Skipping!" % CONFIG['path'])
       return
 
-   module_name = __name__.split(".")[-1]
-
    if CONFIG.get("split", False):
-      create_split_tar(join(staging_area, module_name))
+      create_split_tar(staging_area)
    else:
-      create_simple_tar(join(staging_area, module_name))
+      create_simple_tar(staging_area)
 
 def create_split_tar(staging_area):
    """

@@ -18,14 +18,9 @@
 # Place, Suite 330, Boston, MA 02111-1307 USA
 #
 #-----------------------------------------------------------------------------
-#
-# some "grep targets":
-# TODO: Idea: Add post-processing handlers (f.ex.: to create md5sums/sfv files of all files
-#
-#-----------------------------------------------------------------------------
 
 from datetime import datetime, timedelta
-from os.path import exists, abspath
+from os.path import exists, abspath, join
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -192,9 +187,17 @@ def run_profile(package, profile_config):
    if not profile:
       return
 
+   # create a subfolder for source profiles
+   if package.__name__ == "source_profile":
+      module_folder = profile.__name__.split(".")[-1]
+      staging_folder = join( config.STAGING_AREA, module_folder )
+      os.makedirs( staging_folder )
+   else:
+      staging_folder = config.STAGING_AREA
+
    try:
       profile.init(profile_config)
-      profile.run(config.STAGING_AREA)
+      profile.run(staging_folder)
    except Exception, exc:
       LOG.error("Error staging '%s'. Error message: %s" %
             (profile_config['name'], exc))

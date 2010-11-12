@@ -121,7 +121,7 @@ read access to the system table &#8220;pg_database&#8221;.</p>
 </div>
 </dd>
 <dt><strong>pg_dump_params</strong> (string) <em>optional</em></dt>
-<dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">pg_dump</span></tt> and <tt class="docutils literal"><span class="pre">pg_dumpall</span></tt>.</p>
+<dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">pg_dump</span></tt>.</p>
 <div class="last admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>The parameters for host, user and port (<tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">-U</span></tt>,
@@ -141,6 +141,8 @@ password) is automatically added. See the section
 <a class="reference internal" href="#postgres-passwords"><em>A note on passwords</em></a> for more info.</p>
 </div>
 </dd>
+<dt><strong>pg_dumpall_params</strong> (string) <em>optional</em></dt>
+<dd>Same as <tt class="docutils literal"><span class="pre">pg_dump_params</span></tt>, but for the command <tt class="docutils literal"><span class="pre">pg_dumpall</span></tt></dd>
 </dl>
 </blockquote>
 </div>
@@ -162,10 +164,8 @@ password) is automatically added. See the section
 </div>
 <div class="section" id="a-note-on-passwords">
 <span id="postgres-passwords"></span><h4>A note on passwords<a class="headerlink" href="#a-note-on-passwords" title="Permalink to this headline">¶</a></h4>
-<p>Unfortunately, there are problems with the way pg_dump prompts for passwords.
-So connecting automatically is best possible using the available postgres
-methods. The easiest to set up while being more secure than simple <tt class="docutils literal"><span class="pre">trust</span></tt>
-connections is the <tt class="docutils literal"><span class="pre">~/.pgpass</span></tt> file.</p>
+<p>As a security precaution login credentials should be stored in &#8220;~/.pgpass&#8221;.
+Setting up &#8220;trust&#8221; connections works as well, but is far less secure!</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>It&#8217;s not recommended to use &#8220;trust&#8221; connections. For example,
@@ -201,6 +201,87 @@ entries first when you are using wildcards.) If an entry needs to contain
 </blockquote>
 </div>
 </div>
+<div class="section" id="module-source_profile.mysql">
+<span id="mysql"></span><h3>mysql<a class="headerlink" href="#module-source_profile.mysql" title="Permalink to this headline">¶</a></h3>
+<p>This module will dump MySQL databases running <tt class="docutils literal"><span class="pre">mysqldump</span></tt>. The output will be
+run through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
+<div class="section" id="id4">
+<h4>Prerequisites<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">mysql-python</span></tt> must be installed (<tt class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python-mysqldb</span></tt>)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="id5">
+<h4>Configuration<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>The following fields are used by this plugin:</p>
+<blockquote>
+<dl class="docutils">
+<dt><strong>database</strong> (string)</dt>
+<dd><p class="first">The database to backup. This can be <tt class="docutils literal"><span class="pre">'*'</span></tt> to backup all databases
+(excluding <tt class="docutils literal"><span class="pre">information_schema</span></tt>)</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In order for the wildcard <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt> to work in the config file,
+the user must be able to connect to &#8220;mysql&#8221; and must have
+read access to the table &#8220;db&#8221;.</p>
+</div>
+</dd>
+<dt><strong>host</strong> (string) <em>optional</em></dt>
+<dd>The host on which the database is running</dd>
+<dt><strong>port</strong> (string/int) <em>optional</em></dt>
+<dd>The port on which the database is running</dd>
+<dt><strong>mysqldump_params</strong> (string) <em>optional</em></dt>
+<dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">mysqldump</span></tt>.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>The parameters for host, user and port (<tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">-u</span></tt>,
+<tt class="docutils literal"><span class="pre">-p</span></tt> respectively) should be <strong>avoided</strong>! The plugin uses
+the settings <tt class="docutils literal"><span class="pre">host</span></tt>, <tt class="docutils literal"><span class="pre">user</span></tt> and <tt class="docutils literal"><span class="pre">port</span></tt> to set these
+automatically.</p>
+<p class="last">The plugin uses two types of connection: A programmatic
+connection using <tt class="docutils literal"><span class="pre">libmysql</span></tt> and indirect connection using
+the <tt class="docutils literal"><span class="pre">mysqldump</span></tt> executables. The params specified in this
+config variable will <strong>only</strong> be passed to <tt class="docutils literal"><span class="pre">mysqldump</span></tt>. So
+if you specify other host/user/port variables as specified
+in the dedicated config variables this may have unexpected
+results.</p>
+</div>
+</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section" id="id6">
+<h4>Configuration Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
+   <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;MySQL&#39;</span><span class="p">,</span>
+   <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;mysql&#39;</span><span class="p">,</span>
+   <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+      <span class="n">database</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span><span class="p">,</span>
+      <span class="n">port</span> <span class="o">=</span> <span class="s">&quot;3306&quot;</span><span class="p">,</span>
+      <span class="n">host</span> <span class="o">=</span> <span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+      <span class="n">mysqldump_params</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+      <span class="p">),</span>
+   <span class="p">),</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mysql-passwords">
+<span id="id7"></span><h4>A note on passwords<a class="headerlink" href="#mysql-passwords" title="Permalink to this headline">¶</a></h4>
+<p>As a security precaution login credentials should be stored in &#8220;~/.my.cnf&#8221;.
+Setting up passwordless connections should work as well, but is far less
+secure!</p>
+<p>Read <a class="reference external" href="http://dev.mysql.com/doc/refman/5.1/en/option-files.html">the MySQL docs</a> for more on this
+subject.</p>
+<p>An example <tt class="docutils literal"><span class="pre">~/.my.cnf</span></tt> could look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">client</span><span class="p">]</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">backup</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">the</span><span class="o">.</span><span class="n">super</span><span class="o">-</span><span class="n">s3cr1t</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="module-source_profile.command">
 <span id="command"></span><h3>command<a class="headerlink" href="#module-source_profile.command" title="Permalink to this headline">¶</a></h3>
 <p>The command plugin executes a shell command. It will capture stdout and stderr
@@ -211,8 +292,8 @@ to stdout.txt and stderr.txt respectively.</p>
 Popen! If you want to do this it is recommended to write an intermediary
 shell script.</p>
 </div>
-<div class="section" id="id4">
-<h4>Configuration<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id8">
+<h4>Configuration<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
@@ -237,8 +318,8 @@ in the staging area will not be created!</p>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id5">
-<h4>Configuration Example<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id9">
+<h4>Configuration Example<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;test command&#39;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;command&#39;</span><span class="p">,</span>
@@ -255,12 +336,12 @@ in the staging area will not be created!</p>
 </div>
 <div class="section" id="targets">
 <h2>Targets<a class="headerlink" href="#targets" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>folder<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>folder<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-target_profile.folder"></span><p>Creates a subfolder with the current data in the target folder and copies
 everything inside the staging area into that folder</p>
-<div class="section" id="id7">
-<h4>Configuration<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id11">
+<h4>Configuration<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
@@ -269,8 +350,8 @@ everything inside the staging area into that folder</p>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id8">
-<h4>Configuration Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id12">
+<h4>Configuration Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;folder&quot;</span><span class="p">,</span>
@@ -307,17 +388,24 @@ everything inside the staging area into that folder</p>
 <li><a class="reference internal" href="#a-note-on-passwords">A note on passwords</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-source_profile.mysql">mysql</a><ul>
+<li><a class="reference internal" href="#id4">Prerequisites</a></li>
+<li><a class="reference internal" href="#id5">Configuration</a></li>
+<li><a class="reference internal" href="#id6">Configuration Example</a></li>
+<li><a class="reference internal" href="#mysql-passwords">A note on passwords</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-source_profile.command">command</a><ul>
-<li><a class="reference internal" href="#id4">Configuration</a></li>
-<li><a class="reference internal" href="#id5">Configuration Example</a></li>
+<li><a class="reference internal" href="#id8">Configuration</a></li>
+<li><a class="reference internal" href="#id9">Configuration Example</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#targets">Targets</a><ul>
-<li><a class="reference internal" href="#id6">folder</a><ul>
-<li><a class="reference internal" href="#id7">Configuration</a></li>
-<li><a class="reference internal" href="#id8">Configuration Example</a></li>
+<li><a class="reference internal" href="#id10">folder</a><ul>
+<li><a class="reference internal" href="#id11">Configuration</a></li>
+<li><a class="reference internal" href="#id12">Configuration Example</a></li>
 </ul>
 </li>
 </ul>

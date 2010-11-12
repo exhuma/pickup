@@ -14,6 +14,10 @@ postgres
 ~~~~~~~~
 .. automodule:: source_profile.postgres
 
+mysql
+~~~~~
+.. automodule:: source_profile.mysql
+
 command
 ~~~~~~~
 .. automodule:: source_profile.command

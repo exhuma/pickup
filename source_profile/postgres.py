@@ -30,7 +30,7 @@ The following fields are used by this plugin:
                 read access to the system table "pg_database".
 
    **pg_dump_params** (string) *optional*
-      These parameters are passed directly to ``pg_dump`` and ``pg_dumpall``.
+      These parameters are passed directly to ``pg_dump``.
 
       .. warning:: The parameters for host, user and port (``-h``, ``-U``,
                    ``-p`` respectively) should be **avoided**! The plugin uses
@@ -49,6 +49,9 @@ The following fields are used by this plugin:
                    Additionally, the parameter ``-w`` (never prompt for
                    password) is automatically added. See the section
                    :ref:`postgres_passwords` for more info.
+
+   **pg_dumpall_params** (string) *optional*
+      Same as ``pg_dump_params``, but for the command ``pg_dumpall``
 
 Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~
@@ -72,10 +75,8 @@ Configuration Example
 A note on passwords
 ~~~~~~~~~~~~~~~~~~~
 
-Unfortunately, there are problems with the way pg_dump prompts for passwords.
-So connecting automatically is best possible using the available postgres
-methods. The easiest to set up while being more secure than simple ``trust``
-connections is the ``~/.pgpass`` file.
+As a security precaution login credentials should be stored in "~/.pgpass".
+Setting up "trust" connections works as well, but is far less secure!
 
 .. warning:: It's not recommended to use "trust" connections. For example,
           assume the following conditions are met:

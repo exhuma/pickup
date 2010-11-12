@@ -14,6 +14,10 @@ postgres
 ~~~~~~~~
 .. automodule:: source_profile.postgres
 
+command
+~~~~~~~
+.. automodule:: source_profile.command
+
 Targets
 -------
 

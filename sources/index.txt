@@ -32,6 +32,55 @@ compatible.
 
 Everything that is currently available should work fine with Python 2.3 and up.
 
+Usage
+=====
+
+The config file specifies what to backup (``SOURCES``), and where to store it
+(``TARGETS``). See :ref:`configuration` for more information on the general
+configuration.
+
+The sources and targets are defined in python module inside source_profile and
+target_profiles.  For a list of available sources and targets see
+:ref:`available_plugins`
+
+If something is missing the list of plugins, you can easily write a new plugin
+with only minimal python knowledge. See :ref:`writing_plugins` for more
+information.
+
+Application output uses the default python logging module. All informational
+messages are routed to stdout, and all errors/warnings are routed to stderr.
+This is useful for cron jobs: redirecting stdout to /dev/null still lets
+important messages through, so cron can take the appropriate steps (send
+mails?)
+
+Debugging messages are logged to a auto-rotating file inside the "logs"
+directory. This provides some semi-persistent storage. If something went wrong
+and you redirected stdout (or deleted the cron-mails), you still may find some
+useful info in that file.
+
+Rough Roadmap
+=============
+
+IMPLEMENTED
+~~~~~~~~~~~
+
+  - Folder backups (split and simple)
+  - Push to folder
+  - Backup PostgreSQL
+  - Docs
+
+TODO (in order of importance)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - Backup MySQL
+  - Push to FTP
+  - Remove old files (using the retention value)
+  - Push to rsync
+  - Move logging configuration out of the code
+
+Table of Contents
+=================
+
 Contents:
 
 .. toctree::

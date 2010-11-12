@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Writing Plugins &mdash; pickup v1.0 documentation</title>
+    <title>Using Plugins &mdash; pickup v1.0 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -47,8 +47,14 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="writing-plugins">
-<span id="id1"></span><h1>Writing Plugins<a class="headerlink" href="#writing-plugins" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="using-plugins">
+<span id="writing-plugins"></span><h1>Using Plugins<a class="headerlink" href="#using-plugins" title="Permalink to this headline">¶</a></h1>
+<p>The core uses the plugin filename as profile name. So if you create a new
+plugin named <tt class="docutils literal"><span class="pre">foobar.py</span></tt>, then you can use it in the config file as <tt class="docutils literal"><span class="pre">profile</span>
+<span class="pre">=</span> <span class="pre">&quot;foobar&quot;</span></tt>. It&#8217;s as simple as that.</p>
+</div>
+<div class="section" id="id1">
+<h1>Writing Plugins<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>You can do pretty much anything with these plugins. As you can chain multiple
 sources or targets, nothing holds you back for writing a plugin that won&#8217;t
 create real backups. This might sound useless, but, you could for example write
@@ -75,7 +81,11 @@ staging area to another location.</li>
 used in the plugins. As such, it would be very nice if these values are well
 documented. The project used the module level docstrings in the auto-generated
 documentation (the one you are reading just now). So everything needed to setup
-the pluigin should be documented there.</p>
+the plugin should be documented there.</p>
+<p>It is recommended to add a code-block depicting an example configuration
+section for the module. This will make the generated documentation easier to
+read and will provide simple copy/paste templates to users.</p>
+<p>Look at the available module&#8217;s source code for examples.</p>
 </div>
 <div class="section" id="logging">
 <h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
@@ -179,7 +189,8 @@ target location (as specified in the config).</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Writing Plugins</a><ul>
+<li><a class="reference internal" href="#">Using Plugins</a></li>
+<li><a class="reference internal" href="#id1">Writing Plugins</a><ul>
 <li><a class="reference internal" href="#general-housekeeping">General housekeeping</a><ul>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#logging">Logging</a></li>
@@ -240,7 +251,7 @@ target location (as specified in the config).</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michel Albert.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
     </div>
   </body>
 </html>

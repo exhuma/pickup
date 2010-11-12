@@ -68,6 +68,56 @@ themselves are another story. Some modules may require third-party modules (for
 example: the postgres module requires psycopg2) and may not be as backwards
 compatible.</p>
 <p>Everything that is currently available should work fine with Python 2.3 and up.</p>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The config file specifies what to backup (<tt class="docutils literal"><span class="pre">SOURCES</span></tt>), and where to store it
+(<tt class="docutils literal"><span class="pre">TARGETS</span></tt>). See <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a> for more information on the general
+configuration.</p>
+<p>The sources and targets are defined in python module inside source_profile and
+target_profiles.  For a list of available sources and targets see
+<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></p>
+<p>If something is missing the list of plugins, you can easily write a new plugin
+with only minimal python knowledge. See <a class="reference internal" href="writing_plugins.html#writing-plugins"><em>Using Plugins</em></a> for more
+information.</p>
+<p>Application output uses the default python logging module. All informational
+messages are routed to stdout, and all errors/warnings are routed to stderr.
+This is useful for cron jobs: redirecting stdout to /dev/null still lets
+important messages through, so cron can take the appropriate steps (send
+mails?)</p>
+<p>Debugging messages are logged to a auto-rotating file inside the &#8220;logs&#8221;
+directory. This provides some semi-persistent storage. If something went wrong
+and you redirected stdout (or deleted the cron-mails), you still may find some
+useful info in that file.</p>
+</div>
+<div class="section" id="rough-roadmap">
+<h1>Rough Roadmap<a class="headerlink" href="#rough-roadmap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="implemented">
+<h2>IMPLEMENTED<a class="headerlink" href="#implemented" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Folder backups (split and simple)</li>
+<li>Push to folder</li>
+<li>Backup PostgreSQL</li>
+<li>Docs</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="todo-in-order-of-importance">
+<h2>TODO (in order of importance)<a class="headerlink" href="#todo-in-order-of-importance" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Backup MySQL</li>
+<li>Push to FTP</li>
+<li>Remove old files (using the retention value)</li>
+<li>Push to rsync</li>
+<li>Move logging configuration out of the code</li>
+</ul>
+</blockquote>
+</div>
+</div>
+<div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -82,7 +132,8 @@ compatible.</p>
 <li class="toctree-l2"><a class="reference internal" href="available_plugins.html#targets">Targets</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="writing_plugins.html">Writing Plugins</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="writing_plugins.html">Using Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writing_plugins.html#id1">Writing Plugins</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#general-housekeeping">General housekeeping</a></li>
 <li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#configuration-values">Configuration Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#writing-source-plugins">Writing Source Plugins</a></li>
@@ -109,7 +160,14 @@ compatible.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Pickup</a><ul>
+<li><a class="reference internal" href="#">Pickup</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#rough-roadmap">Rough Roadmap</a><ul>
+<li><a class="reference internal" href="#implemented">IMPLEMENTED</a></li>
+<li><a class="reference internal" href="#todo-in-order-of-importance">TODO (in order of importance)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#table-of-contents">Table of Contents</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
@@ -157,7 +215,7 @@ compatible.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michel Albert.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
     </div>
   </body>
 </html>

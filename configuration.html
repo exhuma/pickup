@@ -54,7 +54,10 @@
   <div class="section" id="configuration">
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The configuration file is a python file itself. All values are stored as simple
-python dictionaries or variables.</p>
+python dictionaries or variables. This page explains the general configuration
+structure. Each module may provide additioanl configuration options. They can
+be defined in each module&#8217;s <tt class="docutils literal"><span class="pre">config</span></tt> dictionary. The details for each of
+these module-level configs can be found in <a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a>.</p>
 <div class="section" id="basic-example">
 <h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
 <p>In its most simple form, a config file to
@@ -137,6 +140,11 @@ underlying plugin.</dd>
 </div>
 <div class="section" id="advanced-example">
 <h2>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Not all profiles shown in this example exist yet! It&#8217;s mainly an example of
+how things <em>could</em> look like.</p>
+</div>
 <p>As the config file is a python script, you can do pretty much everything you
 want inside. The main differences are:</p>
 <blockquote>
@@ -331,7 +339,7 @@ available yet!</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michel Albert.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
     </div>
   </body>
 </html>

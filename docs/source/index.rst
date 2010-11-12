@@ -69,11 +69,11 @@ IMPLEMENTED
   - Backup PostgreSQL
   - Docs
   - Backup MySQL
+  - Push to FTP
 
 TODO (in order of importance)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - Push to FTP
   - Remove old files (using the retention value)
   - Push to rsync
   - Move logging configuration out of the code

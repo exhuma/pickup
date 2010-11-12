@@ -191,7 +191,8 @@ def run_profile(package, profile_config):
    if package.__name__ == "source_profile":
       module_folder = profile.__name__.split(".")[-1]
       staging_folder = join( config.STAGING_AREA, module_folder )
-      os.makedirs( staging_folder )
+      if not exists( staging_folder ):
+         os.makedirs( staging_folder )
    else:
       staging_folder = config.STAGING_AREA
 

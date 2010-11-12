@@ -106,6 +106,8 @@ through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
 <dl class="docutils">
 <dt><strong>host</strong></dt>
 <dd>The host on which the database is running</dd>
+<dt><strong>user</strong></dt>
+<dd>The username as whom to connect.</dd>
 <dt><strong>port</strong></dt>
 <dd>The port on which the database is running</dd>
 <dt><strong>database</strong></dt>
@@ -118,6 +120,27 @@ the user must be able to connect to &#8220;template1&#8221; and must have
 read access to the system table &#8220;pg_database&#8221;.</p>
 </div>
 </dd>
+<dt><strong>pg_dump_params</strong> (string) <em>optional</em></dt>
+<dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">pg_dump</span></tt> and <tt class="docutils literal"><span class="pre">pg_dumpall</span></tt>.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>The parameters for host, user and port (<tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">-U</span></tt>,
+<tt class="docutils literal"><span class="pre">-p</span></tt> respectively) should be <strong>avoided</strong>! The plugin uses
+the settings <tt class="docutils literal"><span class="pre">host</span></tt>, <tt class="docutils literal"><span class="pre">user</span></tt> and <tt class="docutils literal"><span class="pre">port</span></tt> to set these
+automatically.</p>
+<p>The plugin uses two
+types of connection: A programmatic connection using
+<tt class="docutils literal"><span class="pre">libpq</span></tt> and indirect connection using the <tt class="docutils literal"><span class="pre">pg_dump</span></tt> and
+<tt class="docutils literal"><span class="pre">pg_dumpall</span></tt> executables. The params specified in this
+config variable will <strong>only</strong> be passed to <tt class="docutils literal"><span class="pre">pg_dump</span></tt> and
+<tt class="docutils literal"><span class="pre">pg_dumpall</span></tt>. So if you specify other host/user/port
+variables as specified in the dedicated config variables
+this may have unexpected results.</p>
+<p class="last">Additionally, the parameter <tt class="docutils literal"><span class="pre">-w</span></tt> (never prompt for
+password) is automatically added. See the section
+<a class="reference internal" href="#postgres-passwords"><em>A note on passwords</em></a> for more info.</p>
+</div>
+</dd>
 </dl>
 </blockquote>
 </div>
@@ -128,19 +151,21 @@ read access to the system table &#8220;pg_database&#8221;.</p>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;postgres&#39;</span><span class="p">,</span>
    <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
       <span class="n">host</span> <span class="o">=</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+      <span class="n">user</span> <span class="o">=</span> <span class="s">&#39;backup&#39;</span><span class="p">,</span>
       <span class="n">database</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="c"># using &#39;*&#39; will dump all dbs</span>
-      <span class="n">port</span> <span class="o">=</span> <span class="mi">5432</span>
+      <span class="n">port</span> <span class="o">=</span> <span class="mi">5432</span><span class="p">,</span>
+      <span class="n">pg_dump_params</span> <span class="o">=</span> <span class="s">&quot;-Ft -c&quot;</span><span class="p">,</span>
       <span class="p">),</span>
    <span class="p">),</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="a-note-on-passwords">
-<h4>A note on passwords<a class="headerlink" href="#a-note-on-passwords" title="Permalink to this headline">¶</a></h4>
+<span id="postgres-passwords"></span><h4>A note on passwords<a class="headerlink" href="#a-note-on-passwords" title="Permalink to this headline">¶</a></h4>
 <p>Unfortunately, there are problems with the way pg_dump prompts for passwords.
 So connecting automatically is best possible using the available postgres
 methods. The easiest to set up while being more secure than simple <tt class="docutils literal"><span class="pre">trust</span></tt>
-connections is the <tt class="docutils literal"><span class="pre">.~/pgpass</span></tt> file.</p>
+connections is the <tt class="docutils literal"><span class="pre">~/.pgpass</span></tt> file.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>It&#8217;s not recommended to use &#8220;trust&#8221; connections. For example,

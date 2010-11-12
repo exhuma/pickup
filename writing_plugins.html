@@ -75,6 +75,12 @@ staging area to another location.</li>
 </blockquote>
 <div class="section" id="general-housekeeping">
 <h2>General housekeeping<a class="headerlink" href="#general-housekeeping" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="file-names">
+<h3>File Names<a class="headerlink" href="#file-names" title="Permalink to this headline">¶</a></h3>
+<p>When creating filenames, it is recommended to use <a class="reference external" href="http://docs.python.org/library/os.path.html#os.path.join">os.path.join</a>, which will ensure
+platform independent filenames.</p>
+<p>The minimal example below makes use of this module.</p>
+</div>
 <div class="section" id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <p>The config file used by the end-users strongly depends on the config values
@@ -122,10 +128,17 @@ and must be a tuple of (major_number, minor_number).</p>
 </div>
 <div class="section" id="example-minimal-setup">
 <h3>Example minimal setup<a class="headerlink" href="#example-minimal-setup" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This example also makes use of <tt class="docutils literal"><span class="pre">os.path.join</span></tt>. It is recommended to
+add this method to create filenames, which will ensure platform independent
+file names. See <a class="reference external" href="http://docs.python.org/library/os.path.html#os.path.join">os.path.join</a> for more info!</p>
+</div>
 <div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This is the module-level docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 <span class="n">API_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 
@@ -134,6 +147,9 @@ and must be a tuple of (major_number, minor_number).</p>
 
 <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">staging_area</span><span class="p">):</span>
    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Running on </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">staging_area</span><span class="p">)</span>
+   <span class="n">file_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">staging_area</span><span class="p">,</span> <span class="s">&quot;helloworld.txt&quot;</span><span class="p">),</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+   <span class="n">file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="s">&quot;Hello World!</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">)</span>
+   <span class="n">file_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -192,6 +208,7 @@ target location (as specified in the config).</p>
 <li><a class="reference internal" href="#">Using Plugins</a></li>
 <li><a class="reference internal" href="#id1">Writing Plugins</a><ul>
 <li><a class="reference internal" href="#general-housekeeping">General housekeeping</a><ul>
+<li><a class="reference internal" href="#file-names">File Names</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#api-version">API version</a></li>

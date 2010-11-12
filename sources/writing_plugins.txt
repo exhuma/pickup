@@ -33,6 +33,15 @@ Both source and target plugins follow the same standard. In a nutshell:
 General housekeeping
 --------------------
 
+File Names
+~~~~~~~~~~
+
+When creating filenames, it is recommended to use `os.path.join
+<http://docs.python.org/library/os.path.html#os.path.join>`_, which will ensure
+platform independent filenames.
+
+The minimal example below makes use of this module.
+
 Documentation
 ~~~~~~~~~~~~~
 
@@ -83,12 +92,18 @@ and must be a tuple of (major_number, minor_number).
 Example minimal setup
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. note:: This example also makes use of ``os.path.join``. It is recommended to
+   add this method to create filenames, which will ensure platform independent
+   file names. See `os.path.join
+   <http://docs.python.org/library/os.path.html#os.path.join>`_ for more info!
+
 .. code-block:: python
 
    """
    This is the module-level docstring
    """
    import logging
+   from os.path import join
    LOG = logging.getLogger(__name__)
    API_VERSION = (1,0)
 
@@ -97,6 +112,9 @@ Example minimal setup
 
    def run(staging_area):
       LOG.info("Running on %s" % staging_area)
+      file_handle = open(join(staging_area, "helloworld.txt"), "w")
+      file_handle.write( "Hello World!\n" )
+      file_handle.close()
 
 Configuration Values
 --------------------

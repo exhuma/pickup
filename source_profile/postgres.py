@@ -15,6 +15,9 @@ The following fields are used by this plugin:
    **host**
       The host on which the database is running
 
+   **user**
+      The username as whom to connect.
+
    **port**
       The port on which the database is running
 
@@ -26,6 +29,27 @@ The following fields are used by this plugin:
                 the user must be able to connect to "template1" and must have
                 read access to the system table "pg_database".
 
+   **pg_dump_params** (string) *optional*
+      These parameters are passed directly to ``pg_dump`` and ``pg_dumpall``.
+
+      .. warning:: The parameters for host, user and port (``-h``, ``-U``,
+                   ``-p`` respectively) should be **avoided**! The plugin uses
+                   the settings ``host``, ``user`` and ``port`` to set these
+                   automatically.
+
+                   The plugin uses two
+                   types of connection: A programmatic connection using
+                   ``libpq`` and indirect connection using the ``pg_dump`` and
+                   ``pg_dumpall`` executables. The params specified in this
+                   config variable will **only** be passed to ``pg_dump`` and
+                   ``pg_dumpall``. So if you specify other host/user/port
+                   variables as specified in the dedicated config variables
+                   this may have unexpected results.
+
+                   Additionally, the parameter ``-w`` (never prompt for
+                   password) is automatically added. See the section
+                   :ref:`postgres_passwords` for more info.
+
 Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -36,10 +60,14 @@ Configuration Example
       profile = 'postgres',
       config = dict(
          host = 'localhost',
+         user = 'backup',
          database = '*', # using '*' will dump all dbs
-         port = 5432
+         port = 5432,
+         pg_dump_params = "-Ft -c",
          ),
       ),
+
+.. _postgres_passwords:
 
 A note on passwords
 ~~~~~~~~~~~~~~~~~~~
@@ -47,7 +75,7 @@ A note on passwords
 Unfortunately, there are problems with the way pg_dump prompts for passwords.
 So connecting automatically is best possible using the available postgres
 methods. The easiest to set up while being more secure than simple ``trust``
-connections is the ``.~/pgpass`` file.
+connections is the ``~/.pgpass`` file.
 
 .. warning:: It's not recommended to use "trust" connections. For example,
           assume the following conditions are met:
@@ -83,6 +111,7 @@ Here's a copy of the relevant docs:
 
 import logging
 import psycopg2
+import shlex
 from subprocess import Popen, PIPE
 from os.path import join, exists, abspath
 import os
@@ -100,6 +129,7 @@ def init(source):
 def list_dbs():
    conn = psycopg2.connect(
          database = 'template1',
+         user = CONFIG['user'],
          host = CONFIG['host'],
          port = CONFIG['port'],
       )
@@ -111,13 +141,30 @@ def list_dbs():
    conn.close()
    return output
 
+def get_params(command):
+   """
+   Construct a list of command-line params and return it.
+   To be used in ``pg_dump`` and ``pg_dumpall``
+
+   @param command: The command name (either "pg_dumpall" or "pg_dump")
+   """
+   key = "%s_params" % command
+   out = []
+   if "port" in CONFIG and CONFIG['port']:
+      out.extend([ "-p", str(CONFIG['port']) ])
+   if "host" in CONFIG and CONFIG['host']:
+      out.extend([ "-h", CONFIG['host'] ])
+   if "user" in CONFIG and CONFIG['user']:
+      out.extend([ "-U", CONFIG['user'] ])
+   if key in CONFIG and CONFIG[key]:
+      out.extend( shlex.split(CONFIG[key]) )
+   return out
+
 def dump_one_db(staging_area, dbname):
    LOG.info("Dumping %s" % dbname)
-   command = [
-      'pg_dump',
-      '-w',
-      '-Ft',
-      dbname ]
+   command = [ 'pg_dump', '-w' ]
+   command.extend( get_params("pg_dump") )
+   command.append( dbname )
 
    if not exists(staging_area):
       os.makedirs(staging_area)
@@ -125,18 +172,42 @@ def dump_one_db(staging_area, dbname):
 
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
    p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
-      join(staging_area, "%s.tar.bz2" % dbname), "wb"), stderr=PIPE )
+      join(staging_area, "%s.bz2" % dbname), "wb"), stderr=PIPE )
 
+   p1.wait()
    p2.wait()
 
-   if p1.poll() != 0:
+   if p1.returncode != 0:
       LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
 
-   if p2.poll() != 0:
+   if p2.returncode != 0:
+      LOG.error("Error while running bzip2: %s" % p2.stderr.read())
+
+def dump_globals(staging_area):
+   LOG.info("Dumping posgtres globals")
+   command = [ 'pg_dumpall', '-g' ]
+   command.extend( get_params("pg_dumpall") )
+
+   if not exists(staging_area):
+      os.makedirs(staging_area)
+      LOG.info("%s created" % abspath(staging_area))
+
+   p1 = Popen( command, stdout=PIPE, stderr=PIPE )
+   p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
+      join(staging_area, "globals.bz2" ), "wb"), stderr=PIPE )
+
+   p1.wait()
+   p2.wait()
+
+   if p1.returncode != 0:
+      LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
+
+   if p2.returncode != 0:
       LOG.error("Error while running bzip2: %s" % p2.stderr.read())
 
 def run(staging_area):
 
+   dump_globals(staging_area)
    if CONFIG['database'] == '*':
       for dbname in list_dbs():
          dump_one_db(staging_area, dbname)

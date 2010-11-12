@@ -104,10 +104,6 @@ def check_config():
       LOG.critical("Variable 'TARGETS' not found in config!")
       sys.exit(9)
 
-   if not config.TARGETS:
-      LOG.critical("No targets defined (variable exists but is empty)!")
-      sys.exit(9)
-
 def setup_logging():
    """
    Log everything below warning to stdout, and

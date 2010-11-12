@@ -115,7 +115,6 @@ import psycopg2
 import shlex
 from subprocess import Popen, PIPE
 from os.path import join, exists, abspath
-import os
 
 LOG = logging.getLogger(__name__)
 API_VERSION = (1,0)
@@ -167,10 +166,6 @@ def dump_one_db(staging_area, dbname):
    command.extend( get_params("pg_dump") )
    command.append( dbname )
 
-   if not exists(staging_area):
-      os.makedirs(staging_area)
-      LOG.info("%s created" % abspath(staging_area))
-
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
    p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
       join(staging_area, "%s.bz2" % dbname), "wb"), stderr=PIPE )
@@ -188,10 +183,6 @@ def dump_globals(staging_area):
    LOG.info("Dumping posgtres globals")
    command = [ 'pg_dumpall', '-g' ]
    command.extend( get_params("pg_dumpall") )
-
-   if not exists(staging_area):
-      os.makedirs(staging_area)
-      LOG.info("%s created" % abspath(staging_area))
 
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
    p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(

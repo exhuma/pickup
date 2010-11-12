@@ -193,6 +193,7 @@ def run_profile(package, profile_config):
       staging_folder = join( config.STAGING_AREA, module_folder )
       if not exists( staging_folder ):
          os.makedirs( staging_folder )
+         LOG.debug( "Created directory %r" % staging_folder )
    else:
       staging_folder = config.STAGING_AREA
 

@@ -96,10 +96,6 @@ def check_config():
       LOG.critical("Variable 'SOURCES' not found in config!")
       sys.exit(9)
 
-   if not config.SOURCES:
-      LOG.critical("No sources defined (variable exists but is empty)!")
-      sys.exit(9)
-
    if not hasattr(config, "TARGETS"):
       LOG.critical("Variable 'TARGETS' not found in config!")
       sys.exit(9)

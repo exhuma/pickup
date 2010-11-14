@@ -21,6 +21,7 @@
 
 from datetime import datetime, timedelta
 from os.path import exists, abspath, join
+from shutil import rmtree
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -224,6 +225,9 @@ def main():
    LOG.info("Pushing to targets")
    for target in config.TARGETS:
       run_profile(target_profile, target)
+
+   LOG.info("Deleting staging area")
+   rmtree(config.STAGING_AREA)
 
 if __name__ == "__main__":
    setup_logging()

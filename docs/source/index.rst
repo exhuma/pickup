@@ -93,12 +93,13 @@ compatible.
 
 Everything that is currently available should work fine with Python 2.3 and up.
 
-Concepts
-========
+Execution Concept
+=================
 
 The application works in two main steps:
 
-   - Generate the backup data (DB dumps, archive generation, ...)
+   - Generate the backup data (DB dumps, archive generation, ...) inside a
+     temporary "staging area"
 
      See :term:`generator`
 

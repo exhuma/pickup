@@ -32,7 +32,6 @@ Configuration Example
 import logging
 import tarfile
 import re
-from datetime import datetime
 from os.path import exists, join, abspath, isdir, isfile
 import os
 
@@ -107,12 +106,15 @@ def create_split_tar(staging_area):
       tar.close()
 
 def get_basename():
-   # create the desired filename
-   now = datetime.now()
-   basename = "%s-%s" % (
-         now.strftime("%Y-%m-%d"),
-         re.sub( r'[^a-zA-Z0-9]', "_", SOURCE['name'] )
-         )
+   """
+   Create a 'clean' filename
+   """
+
+   # replace non-ascii characters with underscores
+   basename = re.sub( r'[^a-zA-Z0-9]', "_", SOURCE['name'] )
+
+   # now remove all leading/trainling underscores
+   basename = basename.strip("_")
 
    # prevent accidental overwrites
    counter = 0

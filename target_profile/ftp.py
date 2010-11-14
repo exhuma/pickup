@@ -21,6 +21,19 @@ The following fields are used by this plugin:
       If specified, the backups will be rooted in this folder. If not
       specified, the backups will be created on the default folder.
 
+   **retention** (dict) *optional*
+      How long the data should be kept. Everything older than this will be
+      deleted. The dictionary values will be passed as keyword arguments to
+      `datetime.timedelta
+      <http://docs.python.org/library/datetime.html#datetime.timedelta>`_. If
+      set to ``None``, the data will be kept indefinitely!
+
+      **Default:** ``None``
+
+      .. note:: This script uses the folder name to determine the date! All
+                folders that have a name not expected by this script, will
+                issue a warning.
+
 Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -34,12 +47,15 @@ Configuration Example
          username="itsame",
          password="maario",
          remote_folder="tube/coins",
+         retention=dict(
+               weeks=52
+            ),
          )
       ),
 
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import os
 import os.path
@@ -47,6 +63,7 @@ import os.path
 LOG = logging.getLogger(__name__)
 API_VERSION = (1,0)
 CONFIG = {}
+FOLDER_FORMAT = "%Y-%m-%d"
 
 def init(target):
    CONFIG.update(target['config'])
@@ -61,18 +78,47 @@ def try_mkd( conn, foldername ):
       else:
          raise
 
-def run(staging_area):
+def remove_old_files(conn, timedelta_params):
+   delta = timedelta(**timedelta_params)
+   threshold_date = datetime.now() - delta
+   LOG.info("Removing files created before %s" % threshold_date)
+   for entry in conn.nlst():
+      try:
+         entry_date = datetime.strptime(entry, FOLDER_FORMAT)
+         LOG.debug("Inspecting %s (threshold=%s, todelete=%s)" % (
+            entry, threshold_date, entry_date<threshold_date ))
+         if entry_date < threshold_date:
+            LOG.info("Deleting %s" % entry)
+            conn.rmd(entry)
+      except ValueError, e:
+         LOG.warning( str(e) )
+   else:
+      LOG.info("All obsolete files successfully removed.")
+
+def run_ftp(staging_area):
+   """
+   Run the ftp profile
+
+   I put this in a separate method to make error-handling and work-dir
+   restoration easier to read in the "run" method.
+   """
    os.chdir(staging_area)
-   current_date_folder = datetime.now().strftime("%Y-%m-%d")
+   current_date_folder = datetime.now().strftime(FOLDER_FORMAT)
 
    from ftplib import FTP
    ftp = FTP(CONFIG['host'],
          user=CONFIG['username'],
          passwd=CONFIG['password']
          )
-   #ftp.retrlines('LIST')     # list directory contents
+
    if 'remote_folder' in CONFIG and CONFIG['remote_folder']:
+      try_mkd( ftp, CONFIG['remote_folder'] )
       ftp.cwd(CONFIG['remote_folder'])
+
+   # delete old files
+   timedelta_params = CONFIG.get('retention', None)
+   if timedelta_params:
+      remove_old_files(ftp, timedelta_params)
 
    try_mkd( ftp, current_date_folder )
    ftp.cwd( current_date_folder )
@@ -102,5 +148,15 @@ def run(staging_area):
                open(os.path.join(root,filename), "rb") )
 
    ftp.quit()
+
+def run(staging_area):
+   workdir_bak = os.getcwd()
+
+   try:
+      run_ftp(staging_area)
+   except Exception, e:
+      LOG.exception(e)
+
+   os.chdir(workdir_bak)
 
 

@@ -151,12 +151,15 @@ previous bash script. These features are:
 
   - **[DONE]** Push to FTP
 
-  - Remove old files (using the retention value)
+  - **[DONE]** Remove old files in target "dailyfolder" (using the retention
+    value)
 
-  - Push to a remote host via SSH
+  - **[DONE]** Remove old files in target "ftp" (using the retention value)
 
 Additional items on the todo list
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - Push to a remote host via SSH
 
   - Move logging configuration out of the code
 

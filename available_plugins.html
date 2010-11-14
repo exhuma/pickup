@@ -345,8 +345,21 @@ copies everything inside the staging area into that folder</p>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
-<dt><strong>path</strong></dt>
+<dt><strong>path</strong> (string)</dt>
 <dd>The target folder</dd>
+<dt><strong>retention</strong> (dict) <em>optional</em></dt>
+<dd><p class="first">How long the data should be kept. Everything older than this will be
+deleted. The dictionary values will be passed as keyword arguments to
+<a class="reference external" href="http://docs.python.org/library/datetime.html#datetime.timedelta">datetime.timedelta</a>. If
+set to <tt class="xref docutils literal"><span class="pre">None</span></tt>, the data will be kept indefinitely!</p>
+<p><strong>Default:</strong> <tt class="xref docutils literal"><span class="pre">None</span></tt></p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This script uses the OSs <tt class="docutils literal"><span class="pre">mtime</span></tt> value to determine the
+folder&#8217;s date. Refer to you OS reference to see if this is what
+you want!</p>
+</div>
+</dd>
 </dl>
 </blockquote>
 </div>
@@ -357,6 +370,10 @@ copies everything inside the staging area into that folder</p>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;folder&quot;</span><span class="p">,</span>
    <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
       <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;/var/backups&quot;</span><span class="p">,</span>
+      <span class="n">retention</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">hours</span><span class="o">=</span><span class="mi">12</span>
+         <span class="p">)</span>
       <span class="p">),</span>
    <span class="p">),</span>
 </pre></div>

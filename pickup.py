@@ -36,12 +36,12 @@ except ImportError, exc:
    sys.exit(9)
 
 from term import TerminalController
-import source_profile
+import generator_profile
 import target_profile
 
 #-----------------------------------------------------------------------------
 
-EXPECTED_CONFIG_VERSION = (1,0)
+EXPECTED_CONFIG_VERSION = (2,0)
 TERM = TerminalController()
 
 class ReverseLevelFilter(logging.Filter):
@@ -87,8 +87,8 @@ def check_config():
    if major == expected_major and minor == expected_minor:
       LOG.debug( "Config version OK!" )
 
-   if not hasattr(config, "SOURCES"):
-      LOG.critical("Variable 'SOURCES' not found in config!")
+   if not hasattr(config, "GENERATORS"):
+      LOG.critical("Variable 'GENERATORS' not found in config!")
       sys.exit(9)
 
    if not hasattr(config, "TARGETS"):
@@ -127,11 +127,11 @@ def setup_logging():
    LOG.addHandler(debug_handler)
 
    # plugin loggers
-   src_log = logging.getLogger("source_profile")
-   src_log.setLevel(logging.DEBUG)
-   src_log.addHandler(stdout_handler)
-   src_log.addHandler(stderr_handler)
-   src_log.addHandler(debug_handler)
+   gen_log = logging.getLogger("generator_profile")
+   gen_log.setLevel(logging.DEBUG)
+   gen_log.addHandler(stdout_handler)
+   gen_log.addHandler(stderr_handler)
+   gen_log.addHandler(debug_handler)
 
    tgt_log = logging.getLogger("target_profile")
    tgt_log.setLevel(logging.DEBUG)
@@ -167,7 +167,7 @@ def api_is_compatible(module, api_version):
 
 def run_profile(package, profile_config):
    """
-   Run the source/target profile
+   Run the generator/target profile
 
    @param package: The profile package
    @param profile_config: The profile settings (from the config)
@@ -187,8 +187,8 @@ def run_profile(package, profile_config):
    if not profile:
       return
 
-   # create a subfolder for source profiles
-   if package.__name__ == "source_profile":
+   # create a subfolder for generator profiles
+   if package.__name__ == "generator_profile":
       module_folder = profile.__name__.split(".")[-1]
       staging_folder = join( config.STAGING_AREA, module_folder )
       if not exists( staging_folder ):
@@ -217,9 +217,9 @@ def init():
 def main():
    init()
    now = datetime.now()
-   LOG.info("Fetching sources")
-   for source in config.SOURCES:
-      run_profile(source_profile, source)
+   LOG.info("Fetching generators")
+   for generator in config.GENERATORS:
+      run_profile(generator_profile, generator)
 
    LOG.info("Pushing to targets")
    for target in config.TARGETS:

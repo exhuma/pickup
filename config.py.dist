@@ -12,7 +12,7 @@ python to set the different varaiables. Examples are:
 from datetime import timedelta
 
 # Config version (major, minor)
-CONFIG_VERSION = (1,0)
+CONFIG_VERSION = (2,0)
 
 # A custom variable. Not used by the application itself, but used here, in the config script!
 THE_BACKUP_DIR = "/var/backups/data"
@@ -24,7 +24,7 @@ STAGING_AREA = "staging"
 # Backup Sources. They will be processed in order
 #
 # Details on the config values should be documented in the source modules
-SOURCES = [
+GENERATORS = [
    dict(
       name = 'MySQL',
       profile = 'mysql',
@@ -88,7 +88,7 @@ SOURCES = [
 TARGETS = [
    dict(
       name = "local",
-      profile = "folder",
+      profile = "dailyfolder",
       config = dict(
          # retention: how long is old data kept. The value is used as keyword
          # arguments dict for datetime.timedelta

@@ -1,6 +1,6 @@
 """
-Creates a subfolder with the current data in the target folder and copies
-everything inside the staging area into that folder
+Creates a subfolder with the current date (YYYY-MM-DD) in the target folder and
+copies everything inside the staging area into that folder
 
 Configuration
 ~~~~~~~~~~~~~

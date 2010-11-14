@@ -3,31 +3,31 @@
 Available Plugins
 =================
 
-Sources
--------
+Generators
+----------
 
 folder
 ~~~~~~
-.. automodule:: source_profile.folder
+.. automodule:: generator_profile.folder
 
 postgres
 ~~~~~~~~
-.. automodule:: source_profile.postgres
+.. automodule:: generator_profile.postgres
 
 mysql
 ~~~~~
-.. automodule:: source_profile.mysql
+.. automodule:: generator_profile.mysql
 
 command
 ~~~~~~~
-.. automodule:: source_profile.command
+.. automodule:: generator_profile.command
 
 Targets
 -------
 
 folder
 ~~~~~~
-.. automodule:: target_profile.folder
+.. automodule:: target_profile.dailyfolder
 
 ftp
 ~~~

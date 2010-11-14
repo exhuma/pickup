@@ -5,9 +5,9 @@ Configuration
 
 The configuration file is a python file itself. All values are stored as simple
 python dictionaries or variables. This page explains the general configuration
-structure. Each module may provide additioanl configuration options. They can
-be defined in each module's ``config`` dictionary. The details for each of
-these module-level configs can be found in :ref:`available_plugins`.
+structure. Each :term:`module` may provide additional configuration options.
+They can be defined in each module's ``config`` dictionary. The details for
+each of these module-level configs can be found in :ref:`available_plugins`.
 
 Basic example
 -------------
@@ -16,9 +16,9 @@ In its most simple form, a config file to
 backup one folder could look like this::
 
 
-   CONFIG_VERSION = (1,0)
+   CONFIG_VERSION = (2,0)
    STAGING_AREA = "staging"
-   SOURCES = [{
+   GENERATORS = [{
          'name': '/var/www',
          'profile': 'folder',
          'config': {
@@ -57,35 +57,38 @@ The following values must be specified:
    A *temporary* folder. All backup files will be created in that folder before
    pushed into the targets.
 
-**SOURCES**
-   A list of backup sources. The sources will be processed in the same order as
-   they appear in the config file. Each source must have the following fields:
+**GENERATORS**
+   A list of generators. The generators will be processed in the same order as
+   they appear in the config file. Each generator must have the following
+   fields:
 
       ``name``
-         The name of the source (Mainly used to display it in the logs)
+         The name of the generator (Mainly used to display it in the logs)
 
       ``profile``
-         Definition of the nature of the source. Can be a folder, database, or
-         anything supported by the underlying source plugins.
+         The name of the :term:`module` used for this generator. See
+         :ref:`available_plugins` for a list of available profiles.
 
       ``config``
-         Config values for the source profile. These fields depend on the
-         underlying plugin.
+         Config values for the generator profile. These fields depend on the
+         underlying plugin. The values should be documented in
+         :ref:`available_plugins`
 
 **TARGETS**
    A list of backup targets. The targets will be processed in the same order as
-   they appear in the config file. Each source must have the following fields:
+   they appear in the config file. Each target must have the following fields:
 
       ``name``
          The name of the target (Mainly used to display it in the logs)
 
       ``profile``
-         Definition of the nature of the target. Can be a folder, ftp, or
-         anything supported by the underlying target plugins.
+         The name of the :term:`module` used for this target. See
+         :ref:`available_plugins` for a list of available profiles.
 
       ``config``
          Config values for the target profile. These fields depend on the
-         underlying plugin.
+         underlying plugin. The values should be documented in
+         :ref:`available_plugins`
 
 Advanced Example
 ----------------
@@ -99,7 +102,7 @@ want inside. The main differences are:
 
    - Use of comments
    - example use of an import
-   - A string replacement is used in the ``rsync`` target
+   - A string replacement is used in the ``ssh`` target
    - Instead of writing dictionaries using the ``{`` and ``}`` syntax, they are
      constructed using the ``dict()`` builtin. This makes it easier to write
      (and maybe even to read as well).
@@ -199,8 +202,8 @@ Advanced config file::
             ),
          ),
       dict(
-         name = "rsync",
-         profile = "rsync",
+         name = "ssh",
+         profile = "ssh",
          config = dict(
             ssh_key = "%s/id_dsa" % THE_BACKUP_DIR,
             )

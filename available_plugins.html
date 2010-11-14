@@ -53,10 +53,10 @@
             
   <div class="section" id="available-plugins">
 <span id="id1"></span><h1>Available Plugins<a class="headerlink" href="#available-plugins" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="sources">
-<h2>Sources<a class="headerlink" href="#sources" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module-source_profile.folder">
-<span id="folder"></span><h3>folder<a class="headerlink" href="#module-source_profile.folder" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="generators">
+<h2>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-generator_profile.folder">
+<span id="folder"></span><h3>folder<a class="headerlink" href="#module-generator_profile.folder" title="Permalink to this headline">¶</a></h3>
 <p>The folder plugin create a bzipped tar file for a specific folder. It is also
 possible to specify a parent folder and create individual tarballs for each
 folder and one for files beneath that folder.</p>
@@ -87,8 +87,8 @@ False).</dd>
 </div>
 </div>
 </div>
-<div class="section" id="module-source_profile.postgres">
-<span id="postgres"></span><h3>postgres<a class="headerlink" href="#module-source_profile.postgres" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-generator_profile.postgres">
+<span id="postgres"></span><h3>postgres<a class="headerlink" href="#module-generator_profile.postgres" title="Permalink to this headline">¶</a></h3>
 <p>This module will dump the databases running <tt class="docutils literal"><span class="pre">pg_dump</span></tt>. The output will be run
 through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
 <div class="section" id="prerequisites">
@@ -201,8 +201,8 @@ entries first when you are using wildcards.) If an entry needs to contain
 </blockquote>
 </div>
 </div>
-<div class="section" id="module-source_profile.mysql">
-<span id="mysql"></span><h3>mysql<a class="headerlink" href="#module-source_profile.mysql" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-generator_profile.mysql">
+<span id="mysql"></span><h3>mysql<a class="headerlink" href="#module-generator_profile.mysql" title="Permalink to this headline">¶</a></h3>
 <p>This module will dump MySQL databases running <tt class="docutils literal"><span class="pre">mysqldump</span></tt>. The output will be
 run through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
 <div class="section" id="id4">
@@ -282,8 +282,8 @@ subject.</p>
 </div>
 </div>
 </div>
-<div class="section" id="module-source_profile.command">
-<span id="command"></span><h3>command<a class="headerlink" href="#module-source_profile.command" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-generator_profile.command">
+<span id="command"></span><h3>command<a class="headerlink" href="#module-generator_profile.command" title="Permalink to this headline">¶</a></h3>
 <p>The command plugin executes a shell command. It will capture stdout and stderr
 to stdout.txt and stderr.txt respectively.</p>
 <div class="admonition note">
@@ -338,8 +338,8 @@ in the staging area will not be created!</p>
 <h2>Targets<a class="headerlink" href="#targets" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id10">
 <h3>folder<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-target_profile.folder"></span><p>Creates a subfolder with the current data in the target folder and copies
-everything inside the staging area into that folder</p>
+<span class="target" id="module-target_profile.dailyfolder"></span><p>Creates a subfolder with the current date (YYYY-MM-DD) in the target folder and
+copies everything inside the staging area into that folder</p>
 <div class="section" id="id11">
 <h4>Configuration<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
@@ -413,27 +413,27 @@ specified, the backups will be created on the default folder.</dd>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Available Plugins</a><ul>
-<li><a class="reference internal" href="#sources">Sources</a><ul>
-<li><a class="reference internal" href="#module-source_profile.folder">folder</a><ul>
+<li><a class="reference internal" href="#generators">Generators</a><ul>
+<li><a class="reference internal" href="#module-generator_profile.folder">folder</a><ul>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
 <li><a class="reference internal" href="#configuration-example">Configuration Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-source_profile.postgres">postgres</a><ul>
+<li><a class="reference internal" href="#module-generator_profile.postgres">postgres</a><ul>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#id2">Configuration</a></li>
 <li><a class="reference internal" href="#id3">Configuration Example</a></li>
 <li><a class="reference internal" href="#a-note-on-passwords">A note on passwords</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-source_profile.mysql">mysql</a><ul>
+<li><a class="reference internal" href="#module-generator_profile.mysql">mysql</a><ul>
 <li><a class="reference internal" href="#id4">Prerequisites</a></li>
 <li><a class="reference internal" href="#id5">Configuration</a></li>
 <li><a class="reference internal" href="#id6">Configuration Example</a></li>
 <li><a class="reference internal" href="#mysql-passwords">A note on passwords</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-source_profile.command">command</a><ul>
+<li><a class="reference internal" href="#module-generator_profile.command">command</a><ul>
 <li><a class="reference internal" href="#id8">Configuration</a></li>
 <li><a class="reference internal" href="#id9">Configuration Example</a></li>
 </ul>

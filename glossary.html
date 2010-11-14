@@ -1,0 +1,135 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Glossary &mdash; pickup v1.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="pickup v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Using Plugins" href="writing_plugins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="glossary">
+<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary docutils">
+<dt id="term-generator">generator</dt>
+<dd>A generator is a plugin responsible to create a backup file.</dd>
+<dt id="term-generator-profile">generator_profile</dt>
+<dd>A generator profile is a simple python script which will create files
+inside the <a class="reference internal" href="#term-staging-area"><em class="xref std std-term">staging area</em></a>. The primary use of a generator profile
+is to create files containing the backup data. But they could also create
+other files.</dd>
+<dt id="term-module">module</dt>
+<dd>A general synonym for either <a class="reference internal" href="#term-generator-profile"><em class="xref std std-term">generator_profile</em></a> or
+<a class="reference internal" href="#term-target-profile"><em class="xref std std-term">target_profile</em></a></dd>
+<dt id="term-profile">profile</dt>
+<dd>A general synonym for either <a class="reference internal" href="#term-generator-profile"><em class="xref std std-term">generator_profile</em></a> or
+<a class="reference internal" href="#term-target-profile"><em class="xref std std-term">target_profile</em></a></dd>
+<dt id="term-publish">publish</dt>
+<dd>Publishing files does not mean that the files will be visible to the
+grand public. But rather it describes the process of putting (uploading,
+copying, ...) the files to a location defined as backup destination.</dd>
+<dt id="term-staging-area">staging area</dt>
+<dd>The staging area is nothing more than a temporary location. The files
+created by generators will be stored in this folder. Once all generators
+have finished, the target profiles will take over and <a class="reference internal" href="#term-publish"><em class="xref std std-term">publish</em></a>
+these files to their destinations.</dd>
+<dt id="term-target">target</dt>
+<dd>A target is a location where the created backup files are stored. Each
+target is provided by a <a class="reference internal" href="#term-target-profile"><em class="xref std std-term">target profile</em></a></dd>
+<dt id="term-target-profile">target_profile</dt>
+<dd>A target profile is a simple python script which will take files out of
+the <a class="reference internal" href="#term-staging-area"><em class="xref std std-term">staging area</em></a> and put it into a <a class="reference internal" href="#term-target"><em class="xref std std-term">target</em></a></dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="writing_plugins.html"
+                        title="previous chapter">Using Plugins</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/glossary.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

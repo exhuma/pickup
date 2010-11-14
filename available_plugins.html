@@ -399,11 +399,24 @@ will be stored in that folder.</p>
 <dt><strong>remote_folder</strong> (string) <em>optional</em></dt>
 <dd>If specified, the backups will be rooted in this folder. If not
 specified, the backups will be created on the default folder.</dd>
+<dt><strong>retention</strong> (dict) <em>optional</em></dt>
+<dd><p class="first">How long the data should be kept. Everything older than this will be
+deleted. The dictionary values will be passed as keyword arguments to
+<a class="reference external" href="http://docs.python.org/library/datetime.html#datetime.timedelta">datetime.timedelta</a>. If
+set to <tt class="xref docutils literal"><span class="pre">None</span></tt>, the data will be kept indefinitely!</p>
+<p><strong>Default:</strong> <tt class="xref docutils literal"><span class="pre">None</span></tt></p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This script uses the folder name to determine the date! All
+folders that have a name not expected by this script, will
+issue a warning.</p>
+</div>
+</dd>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id14">
-<h4>Configuration Example<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id15">
+<h4>Configuration Example<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;my ftp host&quot;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;ftp&quot;</span><span class="p">,</span>
@@ -412,6 +425,9 @@ specified, the backups will be created on the default folder.</dd>
       <span class="n">username</span><span class="o">=</span><span class="s">&quot;itsame&quot;</span><span class="p">,</span>
       <span class="n">password</span><span class="o">=</span><span class="s">&quot;maario&quot;</span><span class="p">,</span>
       <span class="n">remote_folder</span><span class="o">=</span><span class="s">&quot;tube/coins&quot;</span><span class="p">,</span>
+      <span class="n">retention</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">weeks</span><span class="o">=</span><span class="mi">52</span>
+         <span class="p">),</span>
       <span class="p">)</span>
    <span class="p">),</span>
 </pre></div>
@@ -465,7 +481,7 @@ specified, the backups will be created on the default folder.</dd>
 </li>
 <li><a class="reference internal" href="#module-target_profile.ftp">ftp</a><ul>
 <li><a class="reference internal" href="#id13">Configuration</a></li>
-<li><a class="reference internal" href="#id14">Configuration Example</a></li>
+<li><a class="reference internal" href="#id15">Configuration Example</a></li>
 </ul>
 </li>
 </ul>

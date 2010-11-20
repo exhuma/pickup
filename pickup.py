@@ -20,13 +20,17 @@
 #-----------------------------------------------------------------------------
 
 from datetime import datetime, timedelta
+from logging.handlers import RotatingFileHandler
+from optparse import OptionParser
 from os.path import exists, abspath, join
 from shutil import rmtree
-import os
 import logging
-from logging.handlers import RotatingFileHandler
+import os
 import sys
+
 LOG = logging.getLogger(__name__)
+OPTIONS = {}
+ARGS = []
 
 try:
    import config
@@ -102,15 +106,27 @@ def setup_logging():
        everything above warning to stderr (including warning)
    """
 
-   # main loggers
+   # make sure all messages are propagated to the top-level logger
    LOG.setLevel(logging.DEBUG)
    err_format = logging.Formatter(TERM.RED + "%(asctime)s | %(name)s | %(levelname)s | %(message)s" + TERM.NORMAL)
    out_format = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
 
-   stdout_handler = logging.StreamHandler(sys.stdout)
-   stdout_handler.setLevel(logging.INFO)
-   stdout_handler.addFilter( ReverseLevelFilter(logging.INFO) )
-   stdout_handler.setFormatter(out_format)
+   gen_log = logging.getLogger("generator_profile")
+   tgt_log = logging.getLogger("target_profile")
+
+   if not OPTIONS.quiet:
+      stdout_handler = logging.StreamHandler(sys.stdout)
+
+      if OPTIONS.debug:
+         stdout_handler.setLevel(logging.DEBUG)
+      else:
+         stdout_handler.setLevel(logging.INFO)
+
+      stdout_handler.addFilter( ReverseLevelFilter(logging.INFO) )
+      stdout_handler.setFormatter(out_format)
+      LOG.addHandler(stdout_handler)
+      gen_log.addHandler(stdout_handler)
+      tgt_log.addHandler(stdout_handler)
 
    stderr_handler = logging.StreamHandler(sys.stderr)
    stderr_handler.setLevel(logging.WARNING)
@@ -123,20 +139,15 @@ def setup_logging():
    debug_handler.setLevel(logging.DEBUG)
    debug_handler.setFormatter(out_format)
 
-   LOG.addHandler(stdout_handler)
    LOG.addHandler(stderr_handler)
    LOG.addHandler(debug_handler)
 
    # plugin loggers
-   gen_log = logging.getLogger("generator_profile")
    gen_log.setLevel(logging.DEBUG)
-   gen_log.addHandler(stdout_handler)
    gen_log.addHandler(stderr_handler)
    gen_log.addHandler(debug_handler)
 
-   tgt_log = logging.getLogger("target_profile")
    tgt_log.setLevel(logging.DEBUG)
-   tgt_log.addHandler(stdout_handler)
    tgt_log.addHandler(stderr_handler)
    tgt_log.addHandler(debug_handler)
 
@@ -229,7 +240,21 @@ def main():
    LOG.info("Deleting staging area")
    rmtree(config.STAGING_AREA)
 
+def parse_cmd_args():
+   parser = OptionParser()
+   parser.add_option("-d", "--debug", dest="debug",
+                     help="enable debug messages on stdout",
+                     action="store_true", default=False)
+   parser.add_option("-q", "--quiet",
+                     action="store_true", dest="quiet",
+                     default=False,
+                     help="Suppress stdout (stderr will still enabled)")
+
+   return parser.parse_args()
+
 if __name__ == "__main__":
+
+   OPTIONS, ARGS = parse_cmd_args()
    setup_logging()
    check_config()
    LOG.info("Backup session starting...")

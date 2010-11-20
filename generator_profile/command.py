@@ -67,7 +67,7 @@ def init(source):
 
 def run(staging_area):
 
-   LOG.info( "Running command %r" % CONFIG['command'] )
+   LOG.info( "Capturing output of command %r" % CONFIG['command'] )
    LOG.debug( "   shlex.split result: %r" % shlex.split(CONFIG['command']) )
    stdout = open( join(staging_area, "stdout.txt"), "w+" )
    stderr = open( join(staging_area, "stderr.txt"), "w+" )

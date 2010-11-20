@@ -34,6 +34,13 @@ The following fields are used by this plugin:
                 folders that have a name not expected by this script, will
                 issue a warning.
 
+   **dry_run** (boolean) *optional*
+      If set to ``True`` no files will be uploaded or deleted. Instead, the
+      operations will only be reported to stdout.
+
+      .. note:: Folders will still be created on the remote host to have an
+                accurate simulation.
+
 Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -46,6 +53,7 @@ Configuration Example
          host="ftp.myhost.net",
          username="itsame",
          password="maario",
+         dry_run=True,
          remote_folder="tube/coins",
          retention=dict(
                weeks=52
@@ -89,7 +97,8 @@ def remove_old_files(conn, timedelta_params):
             entry, threshold_date, entry_date<threshold_date ))
          if entry_date < threshold_date:
             LOG.info("Deleting %s" % entry)
-            conn.rmd(entry)
+            if not CONFIG.get("dry_run", False):
+               conn.rmd(entry)
       except ValueError, e:
          LOG.warning( str(e) )
    else:
@@ -111,7 +120,7 @@ def run_ftp(staging_area):
          passwd=CONFIG['password']
          )
 
-   if 'remote_folder' in CONFIG and CONFIG['remote_folder']:
+   if CONFIG.get('remote_folder', None):
       try_mkd( ftp, CONFIG['remote_folder'] )
       ftp.cwd(CONFIG['remote_folder'])
 
@@ -144,8 +153,9 @@ def run_ftp(staging_area):
       for filename in files:
          LOG.info( "Uploading %s to %s" % (
             filename, ftp.pwd()))
-         ftp.storbinary( "STOR %s" % filename,
-               open(os.path.join(root,filename), "rb") )
+         if not CONFIG.get("dry_run", False):
+            ftp.storbinary( "STOR %s" % filename,
+                  open(os.path.join(root,filename), "rb") )
 
    ftp.quit()
 

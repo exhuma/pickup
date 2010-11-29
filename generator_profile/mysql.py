@@ -140,6 +140,8 @@ def run(staging_area):
 
    # so far so good. connect...
    conn = MySQLdb.connect( db="mysql",
+         host = CONFIG.get('host', "localhost"),
+         port = CONFIG.get('port', 3306),
          read_default_file=mysql_option_file )
 
    # always create a backup of "mysql" if possible

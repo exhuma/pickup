@@ -19,8 +19,7 @@
 #
 #-----------------------------------------------------------------------------
 
-from datetime import datetime, timedelta
-from logging.handlers import RotatingFileHandler
+from datetime import datetime
 from optparse import OptionParser
 from os.path import exists, abspath, join
 from shutil import rmtree

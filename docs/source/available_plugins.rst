@@ -22,11 +22,15 @@ command
 ~~~~~~~
 .. automodule:: generator_profile.command
 
+remote_tar
+~~~~~~~~~~
+.. automodule:: generator_profile.remote_tar
+
 Targets
 -------
 
-folder
-~~~~~~
+dailyfolder
+~~~~~~~~~~~
 .. automodule:: target_profile.dailyfolder
 
 ftp

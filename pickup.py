@@ -20,6 +20,7 @@
 #-----------------------------------------------------------------------------
 
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from optparse import OptionParser
 from os.path import exists, abspath, join
 from shutil import rmtree
@@ -27,21 +28,14 @@ import logging
 import os
 import sys
 
-LOG = logging.getLogger(__name__)
-OPTIONS = {}
-ARGS = []
-
-try:
-   import config
-except ImportError, exc:
-   LOG.critical( "config.py was not found! "
-         "This file is required. If you just made a clean checkout, have a "
-         "look at config.py.dist for an example." )
-   sys.exit(9)
-
 from term import TerminalController
 import generator_profile
 import target_profile
+import config
+
+LOG = logging.getLogger(__name__)
+OPTIONS = {}
+ARGS = []
 
 #-----------------------------------------------------------------------------
 
@@ -70,13 +64,13 @@ def check_config():
    important conditions are not met (config version too old, ...)
    """
 
-   if not hasattr(config, "CONFIG_VERSION"):
+   if not hasattr(config_instance, "CONFIG_VERSION"):
       LOG.warning( "The config file does not specify CONFIG_VERSION! I will "
             "try to continue anyway, but this field is recommended to allow "
             "some internal tests to work. I will assume the value '(1,0)'!" )
-      config.CONFIG_VERSION = (1, 0)
+      config_instance.CONFIG_VERSION = (1, 0)
 
-   major, minor = config.CONFIG_VERSION
+   major, minor = config_instance.CONFIG_VERSION
    expected_major, expected_minor = EXPECTED_CONFIG_VERSION
 
    if major < expected_major:
@@ -91,11 +85,11 @@ def check_config():
    if major == expected_major and minor == expected_minor:
       LOG.debug( "Config version OK!" )
 
-   if not hasattr(config, "GENERATORS"):
+   if not hasattr(config_instance, "GENERATORS"):
       LOG.critical("Variable 'GENERATORS' not found in config!")
       sys.exit(9)
 
-   if not hasattr(config, "TARGETS"):
+   if not hasattr(config_instance, "TARGETS"):
       LOG.critical("Variable 'TARGETS' not found in config!")
       sys.exit(9)
 
@@ -133,7 +127,7 @@ def setup_logging():
 
    if not exists("logs"):
       os.makedirs("logs")
-   debug_handler = logging.handlers.RotatingFileHandler("logs/debug.log",
+   debug_handler = RotatingFileHandler("logs/debug.log",
          maxBytes=100000, backupCount=5)
    debug_handler.setLevel(logging.DEBUG)
    debug_handler.setFormatter(out_format)
@@ -201,12 +195,12 @@ def run_profile(package, profile_config):
    # create a subfolder for generator profiles
    if package.__name__ == "generator_profile":
       module_folder = profile.__name__.split(".")[-1]
-      staging_folder = join( config.STAGING_AREA, module_folder )
+      staging_folder = join( config_instance.STAGING_AREA, module_folder )
       if not exists( staging_folder ):
          os.makedirs( staging_folder )
          LOG.debug( "Created directory %r" % staging_folder )
    else:
-      staging_folder = config.STAGING_AREA
+      staging_folder = config_instance.STAGING_AREA
 
    try:
       profile.init(profile_config)
@@ -217,30 +211,33 @@ def run_profile(package, profile_config):
       LOG.exception(exc)
 
 def init():
-   if not exists(config.STAGING_AREA):
-      os.makedirs(config.STAGING_AREA)
-      LOG.info("Staging folder '%s' created" % abspath(config.STAGING_AREA))
-   if not os.path.isdir(config.STAGING_AREA):
-      LOG.critical("Staging folder '%s' is not a folder!" % abspath(config.STAGING_AREA))
+   if not exists(config_instance.STAGING_AREA):
+      os.makedirs(config_instance.STAGING_AREA)
+      LOG.info("Staging folder '%s' created" % abspath(config_instance.STAGING_AREA))
+   if not os.path.isdir(config_instance.STAGING_AREA):
+      LOG.critical("Staging folder '%s' is not a folder!" % abspath(config_instance.STAGING_AREA))
       sys.exit(9)
-   LOG.info("Staging area is: %s" % abspath(config.STAGING_AREA))
+   LOG.info("Staging area is: %s" % abspath(config_instance.STAGING_AREA))
 
 def main():
    init()
    now = datetime.now()
    LOG.info("Fetching generators")
-   for generator in config.GENERATORS:
+   for generator in config_instance.GENERATORS:
       run_profile(generator_profile, generator)
 
    LOG.info("Pushing to targets")
-   for target in config.TARGETS:
+   for target in config_instance.TARGETS:
       run_profile(target_profile, target)
 
    LOG.info("Deleting staging area")
-   rmtree(config.STAGING_AREA)
+   rmtree(config_instance.STAGING_AREA)
 
 def parse_cmd_args():
    parser = OptionParser()
+   parser.add_option("-c", "--config", dest="config",
+                     help="The config file to use",
+                     action="store", default="config")
    parser.add_option("-d", "--debug", dest="debug",
                      help="enable debug messages on stdout",
                      action="store_true", default=False)
@@ -255,6 +252,15 @@ if __name__ == "__main__":
 
    OPTIONS, ARGS = parse_cmd_args()
    setup_logging()
+
+   try:
+      config_instance = config.create(OPTIONS.config)
+   except ImportError, exc:
+      LOG.critical( "config/%s.py was not found! "
+            "This file is required. If you just made a clean checkout, have a "
+            "look at config.py.dist for an example." % OPTIONS.config )
+      sys.exit(9)
+
    check_config()
    LOG.info("Backup session starting...")
    main()

@@ -3,11 +3,12 @@
 Configuration
 =============
 
-The configuration file is a python file itself. All values are stored as simple
-python dictionaries or variables. This page explains the general configuration
-structure. Each :term:`module` may provide additional configuration options.
-They can be defined in each module's ``config`` dictionary. The details for
-each of these module-level configs can be found in :ref:`available_plugins`.
+The configuration file is a python file itself inside the subfolder ``config``.
+All values are stored as simple python dictionaries or variables. This page
+explains the general configuration structure. Each :term:`module` may provide
+additional configuration options.  They can be defined in each module's
+``config`` dictionary. The details for each of these module-level configs can
+be found in :ref:`available_plugins`.
 
 Basic example
 -------------

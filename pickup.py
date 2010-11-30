@@ -28,7 +28,7 @@ import logging
 import os
 import sys
 
-from term import TerminalController
+from lib.term import TerminalController
 import generator_profile
 import target_profile
 import config

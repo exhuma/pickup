@@ -256,9 +256,10 @@ if __name__ == "__main__":
    try:
       config_instance = config.create(OPTIONS.config)
    except ImportError, exc:
-      LOG.critical( "config/%s.py was not found! "
+      LOG.critical( "Error loading the config module %r! "
             "This file is required. If you just made a clean checkout, have a "
-            "look at config.py.dist for an example." % OPTIONS.config )
+            "look at config/config.py.dist for an example." % OPTIONS.config )
+      LOG.exception(exc)
       sys.exit(9)
 
    check_config()

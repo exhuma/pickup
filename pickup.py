@@ -27,6 +27,7 @@ from shutil import rmtree
 import logging
 import os
 import sys
+import re
 
 from lib.term import TerminalController
 import generator_profile
@@ -170,6 +171,28 @@ def api_is_compatible(module, api_version):
             ( module.__name__, minor, expected_minor))
    return True
 
+def get_profile_folder(container, profile_config):
+   """
+   Create a unique foldername for a profile based on it's name
+   """
+
+   # replace non-ascii characters with underscores
+   profile_folder = re.sub( r'[^a-zA-Z0-9_-]', '_', profile_config['name'] )
+
+   # now remove all leading/trainling underscores
+   profile_folder = profile_folder.strip("_")
+
+   # prepend the container
+   profile_folder = join(container, profile_folder)
+
+   # prevent accidental overwrites
+   counter = 0
+   while exists(profile_folder):
+      counter += 1
+      LOG.debug( "File %s exists. Adding a counter." % profile_folder )
+      profile_folder = "%s-%d" % (profile_folder, counter)
+   return profile_folder
+
 def run_profile(package, profile_config):
    """
    Run the generator/target profile
@@ -194,8 +217,15 @@ def run_profile(package, profile_config):
 
    # create a subfolder for generator profiles
    if package.__name__ == "generator_profile":
+
+      # first folder level is the module name. Append this to the staging area
       module_folder = profile.__name__.split(".")[-1]
-      staging_folder = join( config_instance.STAGING_AREA, module_folder )
+      module_folder = join(config_instance.STAGING_AREA, module_folder)
+
+      # into the module folder we put a folder based on the profile's name
+      staging_folder = get_profile_folder(module_folder, profile_config)
+
+      # just in case it does not exist, we'll create all required folders
       if not exists( staging_folder ):
          os.makedirs( staging_folder )
          LOG.debug( "Created directory %r" % staging_folder )

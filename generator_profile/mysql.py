@@ -79,6 +79,7 @@ An example ``~/.my.cnf`` could look like this::
 
 """
 import logging
+import shlex
 import MySQLdb
 from subprocess import Popen, PIPE
 from os.path import join, exists, expanduser
@@ -140,9 +141,8 @@ def run(staging_area):
 
    # so far so good. connect...
    conn = MySQLdb.connect( db="mysql",
-         host = CONFIG.get('host', "localhost"),
-         port = CONFIG.get('port', 3306),
-         read_default_file=mysql_option_file )
+         **CONFIG['connection_params']
+          )
 
    # always create a backup of "mysql" if possible
    dump_one_db(conn, "mysql", staging_area)

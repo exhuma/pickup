@@ -32,7 +32,7 @@ Configuration Example
 import logging
 import tarfile
 import re
-from os.path import exists, join, abspath, isdir, isfile
+from os.path import exists, join, abspath, isdir
 import os
 
 LOG = logging.getLogger(__name__)
@@ -72,13 +72,10 @@ def create_split_tar(staging_area):
       LOG.error("Impossible to create a split tar! %s is not a folder!" % CONFIG['path'])
       return
 
-   # Create the "container" folder inside the staging area
-   basename = get_basename()
-   container = join(staging_area, basename)
-   if not exists(container):
-      os.makedirs( container )
-   elif not isdir(container):
-      LOG.error("'%s' exists and is not a folder! Skipping" % container)
+   if not exists(staging_area):
+      os.makedirs( staging_area )
+   elif not isdir(staging_area):
+      LOG.error("'%s' exists and is not a folder! Skipping" % staging_area)
       return
 
    files = []
@@ -90,14 +87,14 @@ def create_split_tar(staging_area):
          files.append(entrypath)
          continue
 
-      tarname = join(container, "%s.tar.bz2" % entry)
+      tarname = join(staging_area, "%s.tar.bz2" % entry)
       LOG.info("Writing to '%s'" % abspath(tarname))
       tar = tarfile.open(abspath(tarname), "w:bz2")
       tar.add(entrypath)
       tar.close()
 
    if files:
-      tarname = join(container, "__PICKUP_FILES__.tar.bz2")
+      tarname = join(staging_area, "__PICKUP_FILES__.tar.bz2")
       LOG.info("Writing remaining files to '%s'" % abspath(tarname))
       tar = tarfile.open(abspath(tarname), "w:bz2")
       for file in files:

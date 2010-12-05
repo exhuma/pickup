@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 setup(
    name = "pickup",
-   version = "1.1",
+   version = "1.2",
    packages = find_packages(),
-   scripts = ['pickup.py'],
+   entry_points = { 'console_scripts': ['pickup = pickup.pickup:main'] },
    install_requires = [
       'paramiko',
       'mysql-python',

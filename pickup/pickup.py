@@ -29,10 +29,10 @@ import os
 import sys
 import re
 
-from lib.term import TerminalController
 import generator_profile
 import target_profile
 import config
+from lib.term import TerminalController
 
 LOG = logging.getLogger(__name__)
 OPTIONS = {}
@@ -278,7 +278,9 @@ def parse_cmd_args():
 
    return parser.parse_args()
 
-if __name__ == "__main__":
+def main():
+
+   global OPTIONS, ARGS, config_instance
 
    OPTIONS, ARGS = parse_cmd_args()
    setup_logging()
@@ -297,3 +299,5 @@ if __name__ == "__main__":
    main()
    LOG.info("Backup session finished.")
 
+if __name__ == "__main__":
+   main()

@@ -72,6 +72,7 @@ def create_split_tar(staging_area):
       LOG.error("Impossible to create a split tar! %s is not a folder!" % CONFIG['path'])
       return
 
+   LOG.info("Creating tarball for each folder inside %s" % CONFIG['path'])
    if not exists(staging_area):
       os.makedirs( staging_area )
    elif not isdir(staging_area):
@@ -122,6 +123,7 @@ def get_basename():
    return basename
 
 def create_simple_tar(staging_area):
+   LOG.info("Creating tarball for path %s" % CONFIG['path'])
    tarname = "%s.tar.bz2" % get_basename()
 
    # put it into the staging area

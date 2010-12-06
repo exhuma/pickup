@@ -221,7 +221,7 @@ def run_profile(package, profile_config):
       return
 
    # create a subfolder for generator profiles
-   if package.__name__ == "generator_profile":
+   if package.__name__ == "pickup.generator_profile":
 
       # first folder level is the module name. Append this to the staging area
       module_folder = profile.__name__.split(".")[-1]

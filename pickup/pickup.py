@@ -37,6 +37,7 @@ from lib.term import TerminalController
 LOG = logging.getLogger(__name__)
 OPTIONS = {}
 ARGS = []
+config_instance = None
 
 #-----------------------------------------------------------------------------
 
@@ -64,6 +65,10 @@ def check_config():
    Makes some sanity checks on the config file. And gives warnings/errors if
    important conditions are not met (config version too old, ...)
    """
+
+   if not config_instance:
+      LOG.error("Failed to load the config!")
+      sys.exit(9)
 
    if not hasattr(config_instance, "CONFIG_VERSION"):
       LOG.warning( "The config file does not specify CONFIG_VERSION! I will "
@@ -105,8 +110,8 @@ def setup_logging():
    err_format = logging.Formatter(TERM.RED + "%(asctime)s | %(name)s | %(levelname)s | %(message)s" + TERM.NORMAL)
    out_format = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
 
-   gen_log = logging.getLogger("generator_profile")
-   tgt_log = logging.getLogger("target_profile")
+   gen_log = logging.getLogger("pickup.generator_profile")
+   tgt_log = logging.getLogger("pickup.target_profile")
 
    if not OPTIONS.quiet:
       stdout_handler = logging.StreamHandler(sys.stdout)
@@ -205,7 +210,7 @@ def run_profile(package, profile_config):
 
    profile = None
    try:
-      profile = package.create( profile_config["profile"])
+      profile = package.create(profile_config["profile"])
       if not api_is_compatible(profile, (1,0)):
          return
 
@@ -241,6 +246,24 @@ def run_profile(package, profile_config):
       LOG.exception(exc)
 
 def init():
+   global OPTIONS, ARGS, config_instance
+
+   OPTIONS, ARGS = parse_cmd_args()
+   setup_logging()
+
+   LOG.info("Backup session starting...")
+
+   try:
+      config_instance = config.create(OPTIONS.config)
+   except ImportError, exc:
+      LOG.critical( "Error loading the config module %r! "
+            "This file is required. If you just made a clean checkout, have a "
+            "look at config/config.py.dist for an example." % OPTIONS.config )
+      LOG.exception(exc)
+      sys.exit(9)
+
+   check_config()
+
    if not exists(config_instance.STAGING_AREA):
       os.makedirs(config_instance.STAGING_AREA)
       LOG.info("Staging folder '%s' created" % abspath(config_instance.STAGING_AREA))
@@ -250,7 +273,9 @@ def init():
    LOG.info("Staging area is: %s" % abspath(config_instance.STAGING_AREA))
 
 def main():
+
    init()
+
    now = datetime.now()
    LOG.info("Fetching generators")
    for generator in config_instance.GENERATORS:
@@ -262,6 +287,8 @@ def main():
 
    LOG.info("Deleting staging area")
    rmtree(config_instance.STAGING_AREA)
+
+   LOG.info("Backup session finished.")
 
 def parse_cmd_args():
    parser = OptionParser()
@@ -278,26 +305,6 @@ def parse_cmd_args():
 
    return parser.parse_args()
 
-def main():
-
-   global OPTIONS, ARGS, config_instance
-
-   OPTIONS, ARGS = parse_cmd_args()
-   setup_logging()
-
-   try:
-      config_instance = config.create(OPTIONS.config)
-   except ImportError, exc:
-      LOG.critical( "Error loading the config module %r! "
-            "This file is required. If you just made a clean checkout, have a "
-            "look at config/config.py.dist for an example." % OPTIONS.config )
-      LOG.exception(exc)
-      sys.exit(9)
-
-   check_config()
-   LOG.info("Backup session starting...")
-   main()
-   LOG.info("Backup session finished.")
 
 if __name__ == "__main__":
    main()

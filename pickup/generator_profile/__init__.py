@@ -4,6 +4,6 @@ def create(plugname):
       module = reload(globals()[plugname])
       return module
 
-   module = 'generator_profile.%s' % plugname
+   module = 'pickup.generator_profile.%s' % plugname
    __import__(module)
    return globals()[plugname]

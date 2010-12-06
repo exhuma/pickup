@@ -20,27 +20,33 @@ The following fields are used by this plugin:
                 the user must be able to connect to "mysql" and must have
                 read access to the table "db".
 
-   **host** (string) *optional*
+   **host** (string) *optional* (default="localhost")
       The host on which the database is running
 
-   **port** (string/int) *optional*
+   **user** (string) *optional* (default="root")
+      The user used to connect to the DB
+
+   **password** (string) *optional* (default="")
+      The password used to connect to the DB
+
+   **port** (string/int) *optional* (default=3306)
       The port on which the database is running
 
    **mysqldump_params** (string) *optional*
       These parameters are passed directly to ``mysqldump``.
 
-      .. warning:: The parameters for host, user and port (``-h``, ``-u``,
-                   ``-p`` respectively) should be **avoided**! The plugin uses
-                   the settings ``host``, ``user`` and ``port`` to set these
-                   automatically.
+      .. warning:: The parameters for host, user, port and password (``-h``,
+                   ``-u``, ``-p`` and ``-P`` respectively) should be
+                   **avoided**! The plugin uses the settings ``host``, ``user``
+                   and ``port`` to set these automatically.
 
                    The plugin uses two types of connection: A programmatic
                    connection using ``libmysql`` and indirect connection using
                    the ``mysqldump`` executables. The params specified in this
                    config variable will **only** be passed to ``mysqldump``. So
-                   if you specify other host/user/port variables as specified
-                   in the dedicated config variables this may have unexpected
-                   results.
+                   if you specify other host/user/password/port variables as
+                   specified in the dedicated config variables this may have
+                   unexpected results.
 
 Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~
@@ -54,35 +60,22 @@ Configuration Example
          database = "*",
          port = "3306",
          host = "localhost",
+         user = "backupuser",
+         password = "foobar"
          mysqldump_params = "",
-         ),
+         connection_params = dict(
+            charset='utf8',
+            compress=True
+         )
       ),
-
-.. _mysql_passwords:
-
-A note on passwords
-~~~~~~~~~~~~~~~~~~~
-
-As a security precaution login credentials should be stored in "~/.my.cnf".
-Setting up passwordless connections should work as well, but is far less
-secure!
-
-Read `the MySQL docs
-<http://dev.mysql.com/doc/refman/5.1/en/option-files.html>`_ for more on this
-subject.
-
-An example ``~/.my.cnf`` could look like this::
-
-    [client]
-    user = backup
-    password = the.super-s3cr1t
+   ),
 
 """
 import logging
 import shlex
 import MySQLdb
 from subprocess import Popen, PIPE
-from os.path import join, exists, expanduser
+from os.path import join
 LOG = logging.getLogger(__name__)
 API_VERSION = (1,0)
 CONFIG = {}
@@ -107,11 +100,12 @@ def dump_all_dbs(conn, staging_area):
 def dump_one_db(conn, db, staging_area):
    LOG.info("Dumping %s" % db)
 
-   command = [ 'mysqldump' ]
-   if "port" in CONFIG and CONFIG['port']:
-      command.extend([ "-P", str(CONFIG['port']) ])
-   if "host" in CONFIG and CONFIG['host']:
-      command.extend([ "-h", CONFIG['host'] ])
+   command = [ 'mysqldump',
+      "-P", str(CONFIG.get('port', 3306)),
+      "-h", CONFIG.get('host', "localhost"),
+      "-u", CONFIG.get('user', "user"),
+      "-p%s" % CONFIG.get('password', "") ]
+
    if "mysqldump_params" in CONFIG and CONFIG["mysqldump_params"]:
       command.extend( shlex.split(CONFIG["mysqldump_params"]) )
    command.append( db )
@@ -132,17 +126,14 @@ def dump_one_db(conn, db, staging_area):
 
 def run(staging_area):
 
-   # use ~/.my.cnf for login/password data
-   mysql_option_file = expanduser("~/.my.cnf")
-   if not exists(mysql_option_file):
-      LOG.error("~/.my.cnf does not exist! Execution halted! "
-            "See the documentation for more information!")
-      return
-
    # so far so good. connect...
    conn = MySQLdb.connect( db="mysql",
-         **CONFIG['connection_params']
-          )
+        user = CONFIG.get("user", "root"),
+        passwd = CONFIG.get('password', ""),
+        host = CONFIG.get('host', "localhost"),
+        port = CONFIG.get('port', 3306),
+        **CONFIG.get('connection_params', {})
+        )
 
    # always create a backup of "mysql" if possible
    dump_one_db(conn, "mysql", staging_area)

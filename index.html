@@ -7,23 +7,23 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pickup &mdash; pickup v1.0 documentation</title>
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <title>Pickup &mdash; pickup v1.2 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.0',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="pickup v1.0 documentation" href="#" />
-    <link rel="next" title="Configuration" href="configuration.html" /> 
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.2 documentation" href="#" />
+    <link rel="next" title="Installation" href="installation.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +36,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="configuration.html" title="Configuration"
+          <a href="installation.html" title="Installation"
              accesskey="N">next</a> |</li>
-        <li><a href="#">pickup v1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">pickup v1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,155 +49,21 @@
             
   <div class="section" id="pickup">
 <h1>Pickup<a class="headerlink" href="#pickup" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="why-history">
-<h2>Why (History)<a class="headerlink" href="#why-history" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-Why am I writing this script and why would you want to use it?</blockquote>
-<p>I needed a simple way to create backups of a couple of folders, a few MySQL and
-PostgreSQL databases and store the created files on a remote FTP site. I
-implemented this using a small bash script using <tt class="docutils literal"><span class="pre">ncftp</span></tt> to store them on the
-FTP site.</p>
-<p><a class="reference external" href="http://www.zmanda.com/">zmanda backup</a> Seemed to be a bit too much at the
-time.</p>
-<p>Over time the script became more and more generalised. And as a result more and
-more unreadable. After it started using bash arrays quite heavily the resulting
-syntax really got on my nerves. Recently I needed to create backups in a
-similar fashion on another server. And there the fun started. A couple of
-problems:</p>
-<blockquote>
-<ul class="simple">
-<li>One server used a standard debian PostgreSQL installation, the other
-didn&#8217;t. But the script used a <tt class="docutils literal"><span class="pre">psql</span></tt> parameter (<tt class="docutils literal"><span class="pre">--cluster</span></tt>) which is
-only available on the default debian installation.</li>
-<li>A couple of minor things did not work exactly the same way on both
-servers.</li>
-</ul>
-</blockquote>
-<p>Additionally, the script had one major annoyance from the beginning:</p>
-<p><tt class="docutils literal"><span class="pre">ncftp</span></tt> writes all server messages to <tt class="docutils literal"><span class="pre">stdout</span></tt>. So, to see errors, I had to
-refrain from redirecting <tt class="docutils literal"><span class="pre">ncftp</span></tt>&#8216;s output to <tt class="docutils literal"><span class="pre">/dev/null</span></tt>. But that in turn
-meant that I received a cron-mail on each execution. Eventually, I redirected
-the FTP output to <tt class="docutils literal"><span class="pre">/dev/null</span></tt>. That way I only got cron-mails when something
-else went wrong. But I had to check the FTP regularly to see if the backups
-arrived correctly.</p>
-<p>I always wanted to fix these issues, and add a couple more functionalities to
-the script. But given the complexity it already had, I thought it be time to
-rewrite it using a different scripting language. I&#8217;ve chosen Python as language
-of choice. A couple of reasons:</p>
-<blockquote>
-<ul class="simple">
-<li>It&#8217;s the language I am currently most proficient in</li>
-<li>It&#8217;s available on pretty much any standard Linux installation (other
-choice could have been perl.)</li>
-<li>It is very dynamic and let&#8217;s me write a modular application easily.</li>
-<li>The syntax is very concise!</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="introducing-pickup">
-<h2>Introducing Pickup<a class="headerlink" href="#introducing-pickup" title="Permalink to this headline">¶</a></h2>
-<p>Pickup is a <strong>modular backup script</strong> written completely in Python.</p>
-<p>The source code is available on <a class="reference external" href="https://github.com/exhuma/pickup">the github project page</a></p>
-<p>The core of the application is the executable <tt class="docutils literal"><span class="pre">pickup.py</span></tt> and the config file
-<tt class="docutils literal"><span class="pre">config.py</span></tt>.  This core does not include <em>any</em> code related as to <em>how</em> a
-backup from a given source should be created. This logic is stashed away in
-modules. This has the advantage that it&#8217;s very easy to add support for a new
-&#8220;data source&#8221; or to change the behaviour of an existing component.</p>
-<p>The backup target is created in the exact same way. For the exact same reason.
-The only drawback, is that backups need to be created in a &#8220;staging area&#8221; first
-before they are deployed to a target. This is done because some targets (like
-rsync) work best if you can feed them one folder containing everything. It
-would be a waste to run rsync on each file separately.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">I was thinking of a way to get rid of the staging area and &#8220;stream&#8221;
-the data directly to the target location. But this would require me to
-rewrite a lot of the already existing code. For now, I am focussing on the
-completion of the current version. Using a temporary staging area does
-currently not pose a problem for me, so I&#8217;ll leave this for the future. The
-main Idea was: Let the generator create and return a file-like object and
-pass this directly to the target. While this won&#8217;t work with everything
-without an intermediate step, it could still be very useful.</p>
-</div>
-<p>Another advantage of the modular design is backwards compatibility. The core
-should do a fairly good job with that. I&#8217;ll take a leap of faith and say, it
-should work with Python 2.3. Maybe even 2.2, but I haven&#8217;t checked. The modules
-themselves are another story. Some modules may require third-party modules (for
-example: the postgres module requires psycopg2) and may not be as backwards
-compatible.</p>
-<p>Everything that is currently available should work fine with Python 2.3 and up.</p>
-</div>
-</div>
-<div class="section" id="execution-concept">
-<h1>Execution Concept<a class="headerlink" href="#execution-concept" title="Permalink to this headline">¶</a></h1>
-<p>The application works in two main steps:</p>
-<blockquote>
-<ul>
-<li><p class="first">Generate the backup data (DB dumps, archive generation, ...) inside a
-temporary &#8220;staging area&#8221;</p>
-<p>See <a class="reference internal" href="glossary.html#term-generator"><em class="xref std std-term">generator</em></a></p>
-</li>
-<li><p class="first">&#8220;publish&#8221; the generated files to one or more targets.</p>
-<p>See <a class="reference internal" href="glossary.html#term-target"><em class="xref std std-term">target</em></a></p>
-</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>The config file specifies what to backup (<tt class="docutils literal"><span class="pre">GENERATORS</span></tt>), and where to store
-it (<tt class="docutils literal"><span class="pre">TARGETS</span></tt>). See <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a> for more information on the general
-configuration.</p>
-<p>The generators and targets are defined in python module inside generator_profile and
-target_profiles.  For a list of available generators and targets see
-<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></p>
-<p>If something is missing the list of plugins, you can easily write a new plugin
-with only minimal python knowledge. See <a class="reference internal" href="writing_plugins.html#writing-plugins"><em>Using Plugins</em></a> for more
-information.</p>
-<p>Application output uses the default python logging module. All informational
-messages are routed to stdout, and all errors/warnings are routed to stderr.
-This is useful for cron jobs: redirecting stdout to /dev/null still lets
-important messages through, so cron can take the appropriate steps (send
-mails?)</p>
-<p>Debugging messages are logged to a auto-rotating file inside the &#8220;logs&#8221;
-directory. This provides some semi-persistent storage. If something went wrong
-and you redirected stdout (or deleted the cron-mails), you still may find some
-useful info in that file.</p>
-</div>
-<div class="section" id="rough-roadmap">
-<h1>Rough Roadmap<a class="headerlink" href="#rough-roadmap" title="Permalink to this headline">¶</a></h1>
-<p>The main goal is to have a script which has all the features that I had in my
-previous bash script. These features are:</p>
-<blockquote>
-<ul class="simple">
-<li><strong>[DONE]</strong> Folder backups (split and simple)</li>
-<li><strong>[DONE]</strong> Push to folder</li>
-<li><strong>[DONE]</strong> Backup PostgreSQL</li>
-<li><strong>[DONE]</strong> Docs</li>
-<li><strong>[DONE]</strong> Backup MySQL</li>
-<li><strong>[DONE]</strong> Push to FTP</li>
-<li><strong>[DONE]</strong> Remove old files in target &#8220;dailyfolder&#8221; (using the retention
-value)</li>
-<li><strong>[DONE]</strong> Remove old files in target &#8220;ftp&#8221; (using the retention value)</li>
-</ul>
-</blockquote>
-<div class="section" id="additional-items-on-the-todo-list">
-<h2>Additional items on the todo list<a class="headerlink" href="#additional-items-on-the-todo-list" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<ul class="simple">
-<li>Push to a remote host via SSH</li>
-<li>Move logging configuration out of the code</li>
-</ul>
-</blockquote>
-</div>
-</div>
-<div class="section" id="table-of-contents">
-<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-procedure">Installation procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#when-not-using-virtualenv-you-may-skip-this-section">When not using virtualenv, you may skip this section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#without-virtualenv">Without virtualenv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#finished-trying-things-out">Finished &amp; Trying things out</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html#basic-example">Basic example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#a-configuration-walkthrough">A configuration walkthrough</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html#required-values">Required values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html#advanced-example">Advanced Example</a></li>
 </ul>
@@ -215,12 +81,69 @@ value)</li>
 <li class="toctree-l2"><a class="reference internal" href="writing_plugins.html#writing-target-plugins">Writing Target Plugins</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="how_and_why.html">Why (History)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_and_why.html#execution-concept">Execution Concept</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_and_why.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_and_why.html#rough-roadmap">Rough Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="how_and_why.html#additional-items-on-the-todo-list">Additional items on the todo list</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
 </div>
 </div>
+<div class="section" id="introducing-pickup">
+<h2>Introducing Pickup<a class="headerlink" href="#introducing-pickup" title="Permalink to this headline">¶</a></h2>
+<p>Pickup is a <strong>modular backup script</strong> written completely in Python.</p>
+<p>The source code is available on <a class="reference external" href="https://github.com/exhuma/pickup">the github project page</a></p>
+<p>The core of the application is the executable <tt class="docutils literal"><span class="pre">pickup.py</span></tt> and a python script
+used as config file.  This core does not include <em>any</em> code related as to <em>how</em>
+a backup from a given source should be created. This logic is stashed away in
+modules. This has the advantage that it&#8217;s very easy to add support for a new
+&#8220;data source&#8221; or to change the behaviour of an existing component.</p>
+<p>The backup target is created in the exact same way. For the exact same reason.
+The only drawback, is that backups need to be created in a &#8220;staging area&#8221; first
+before they are deployed to a target. This is done because some targets (like
+rsync) work best if you can feed them one folder containing everything. It
+would be a waste to run rsync on each file separately.</p>
+</div>
+<div class="section" id="example-configuration">
+<h2>Example Configuration<a class="headerlink" href="#example-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The following configuration script will create a backup of each local home
+folder. Each folder will be stored as separate tarball:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
+<span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">[{</span>
+      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;local home folders&#39;</span><span class="p">,</span>
+      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
+      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&#39;/home&#39;</span><span class="p">,</span>
+         <span class="s">&#39;split&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+         <span class="p">}}]</span>
+
+<span class="n">TARGETS</span> <span class="o">=</span> <span class="p">[{</span>
+      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
+      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&quot;dailyfolder&quot;</span><span class="p">,</span>
+      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&quot;/var/backups/daily&quot;</span><span class="p">,</span>
+         <span class="p">}}]</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a> for more details and examples.</p>
+</div>
+<div class="section" id="example-execution">
+<h2>Example Execution<a class="headerlink" href="#example-execution" title="Permalink to this headline">¶</a></h2>
+<p>Take the above configuration and save it anywhere you like. You can execute it
+by running:</p>
+<div class="highlight-python"><pre>python pickup.py -c /path/to/config_file.py</pre>
+</div>
+<p>Or, if you installed it into you system (see <a class="reference internal" href="installation.html#installation"><em>Installation</em></a>):</p>
+<div class="highlight-python"><pre>/path/to/pickup -c /path/to/config_file.py</pre>
+</div>
+</div>
+</div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h1>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
 <li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
@@ -237,28 +160,23 @@ value)</li>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Pickup</a><ul>
-<li><a class="reference internal" href="#why-history">Why (History)</a></li>
+<li><a class="reference internal" href="#contents">Contents</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#introducing-pickup">Introducing Pickup</a></li>
+<li><a class="reference internal" href="#example-configuration">Example Configuration</a></li>
+<li><a class="reference internal" href="#example-execution">Example Execution</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#execution-concept">Execution Concept</a></li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#rough-roadmap">Rough Roadmap</a><ul>
-<li><a class="reference internal" href="#additional-items-on-the-todo-list">Additional items on the todo list</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#table-of-contents">Table of Contents</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="configuration.html"
-                        title="next chapter">Configuration</a></p>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="sources/index.txt"
+    <li><a href="_sources/index.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -288,14 +206,14 @@ value)</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="configuration.html" title="Configuration"
+          <a href="installation.html" title="Installation"
              >next</a> |</li>
-        <li><a href="#">pickup v1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">pickup v1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michel Albert.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
     </div>
   </body>
 </html>

@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; pickup v1.2 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.2 documentation" href="index.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Pickup" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Pickup"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">I <strong>highly</strong> recommend using virtualenv, but nothing prevents you
+installing it into the root system</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>When installing this package using easy_install, it will build the MySQL and
+Postgres clients. So you&#8217;ll need the necessary headers, plus gcc on your
+machine.</p>
+<p>For Ubuntu, run the following:</p>
+<div class="highlight-python"><pre>sudo apt-get install libmysqlclient-dev libpq-dev python-dev \
+                        build-essential</pre>
+</div>
+</div>
+<div class="section" id="installation-procedure">
+<h2>Installation procedure<a class="headerlink" href="#installation-procedure" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Download the latest package from <a class="reference external" href="http://www.github.com/exhuma/pickup">http://www.github.com/exhuma/pickup</a>
+I recommend using the latest tagged version, but if you want bleeding
+edge, you may also download the &#8220;master&#8221; branch.</p>
+</li>
+<li><p class="first">untar the package:</p>
+<div class="highlight-python"><pre>tar xzf exhuma-pickup-&lt;version number+hash&gt;.tar.gz</pre>
+</div>
+</li>
+<li><p class="first">enter the folder:</p>
+<div class="highlight-python"><pre>cd exhuma-pickup-&lt;version number+hash&gt;</pre>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="when-not-using-virtualenv-you-may-skip-this-section">
+<h2>When not using virtualenv, you may skip this section<a class="headerlink" href="#when-not-using-virtualenv-you-may-skip-this-section" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you don&#8217;t have virtualenv,
+run the following:</p>
+<div class="last highlight-python"><pre>apt-get install python-setuptools &amp;&amp; easy_install virtualenv</pre>
+</div>
+</div>
+<ul>
+<li><p class="first">create a virtualenv:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">virtualenv</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">env</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">activate the environment:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">env</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="without-virtualenv">
+<h2>Without virtualenv<a class="headerlink" href="#without-virtualenv" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">run the installer:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="finished-trying-things-out">
+<h2>Finished &amp; Trying things out<a class="headerlink" href="#finished-trying-things-out" title="Permalink to this headline">¶</a></h2>
+<p>The script is now installed in you system&#8217;s binary path as &#8220;pickup&#8221;. When using
+virtualenv, this will be <tt class="docutils literal"><span class="pre">/path/to/your/env/bin</span></tt>, otherwise it will most
+likely be <tt class="docutils literal"><span class="pre">/usr/local/bin</span></tt></p>
+<p>You may now deactivate the virtualenv by entering <tt class="docutils literal"><span class="pre">deactivate</span></tt>. In the future
+it will no longer be necessary to activate the environment manually. The
+executable script will run automatically in the proper environment.</p>
+<p>To see if everything worked as expected, you may run:</p>
+<div class="highlight-python"><pre>/path/to/your/env/pickup --help</pre>
+</div>
+<p>or simply (if it&#8217;s on your <tt class="docutils literal"><span class="pre">$PATH</span></tt>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pickup</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#installation-procedure">Installation procedure</a></li>
+<li><a class="reference internal" href="#when-not-using-virtualenv-you-may-skip-this-section">When not using virtualenv, you may skip this section</a></li>
+<li><a class="reference internal" href="#without-virtualenv">Without virtualenv</a></li>
+<li><a class="reference internal" href="#finished-trying-things-out">Finished &amp; Trying things out</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Pickup</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuration</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Pickup"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

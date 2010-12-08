@@ -24,8 +24,8 @@ Both source and target plugins follow the same standard. In a nutshell:
 
    - A "run" function performs the actual job of creating/publishing the backup
 
-   - A source plugin is resposible to create backup files inside the "staging
-     area".
+   - A generator plugin is resposible to create backup files inside the
+     "staging area".
 
    - A target plugin is responsible to publish/push the files inside the
      staging area to another location.
@@ -47,7 +47,7 @@ Documentation
 
 The config file used by the end-users strongly depends on the config values
 used in the plugins. As such, it would be very nice if these values are well
-documented. The project used the module level docstrings in the auto-generated
+documented. The project uses the module level docstrings in the auto-generated
 documentation (the one you are reading just now). So everything needed to setup
 the plugin should be documented there.
 
@@ -76,6 +76,9 @@ and then make the appropriate calls to::
    LOG.critical(message)
    LOG.exception(the_exception_instance)
 
+"Debug" and "info" messages will be sent to ``stdout``, whereas everything else
+is sent to ``stderr``. Additionally, everything is logged into a log-file.
+
 API version
 ~~~~~~~~~~~
 
@@ -93,8 +96,8 @@ Example minimal setup
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. note:: This example also makes use of ``os.path.join``. It is recommended to
-   add this method to create filenames, which will ensure platform independent
-   file names. See `os.path.join
+   add this method to create filename strings, which will ensure platform
+   independent file names. See `os.path.join
    <http://docs.python.org/library/os.path.html#os.path.join>`_ for more info!
 
 .. code-block:: python
@@ -122,9 +125,9 @@ Configuration Values
 init
 ~~~~
 
-The core will pass a dictionary to the ``init`` method before executing ``run``.
-This dictionary is the same as the one specified in the config file. So, for
-example if a source (or target) is configured as follows::
+The core will pass a configuration dictionary from the config-file to the
+``init`` method before executing ``run``.
+So, if a generator (or target) is configured as follows::
 
    [ ...,
    dict(
@@ -144,7 +147,12 @@ Then the dictionary passed to the ``init`` method will be::
 run
 ~~~
 
-When executing ``run``, the core will pass the folder name of the "staging area".
+When executing ``run``, the core will pass a folder name inside the "staging
+area". This folder is based on the module name, and the generator/target name
+given by the user. So for the above example, this would be
+``/path/to/staging/my_plugin_module/mysource``. This ensures that each
+executiong of this profile will have it's own "private" storage space to avoid
+accidental file overwrites.
 
 Writing Source Plugins
 ----------------------
@@ -157,7 +165,7 @@ Writing Target Plugins
 ----------------------
 
 A target plugin represents a destination into which the backups will be
-"published" (or "pushed"). The ``run`` method receives the "staging area" as
-parameter. At the end of the run, all files inside that folder should be in the
-target location (as specified in the config).
+"published" (or "pushed"). The ``run`` method receives the root "staging area"
+as parameter. At the end of the run, all files inside that folder should be in
+the target location (as specified in the config).
 

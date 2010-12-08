@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Why (History) &mdash; pickup v1.2 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.2 documentation" href="index.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="Using Plugins" href="writing_plugins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="why-history">
+<span id="how-and-why"></span><h1>Why (History)<a class="headerlink" href="#why-history" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+Why am I writing this script and why would you want to use it?</blockquote>
+<p>I needed a simple way to create backups of a couple of folders, a few MySQL and
+PostgreSQL databases and store the created files on a remote FTP site. I
+implemented this using a small bash script using <tt class="docutils literal"><span class="pre">ncftp</span></tt> to store them on the
+FTP site.</p>
+<p><a class="reference external" href="http://www.zmanda.com/">zmanda backup</a> Seemed to be a bit too much at the
+time.</p>
+<p>Over time the script became more and more generalised. And as a result more and
+more unreadable. After it started using bash arrays quite heavily the resulting
+syntax really got on my nerves. Recently I needed to create backups in a
+similar fashion on another server. And there the fun started. A couple of
+problems:</p>
+<blockquote>
+<ul class="simple">
+<li>One server used a standard debian PostgreSQL installation, the other
+didn&#8217;t. But the script used a <tt class="docutils literal"><span class="pre">psql</span></tt> parameter (<tt class="docutils literal"><span class="pre">--cluster</span></tt>) which is
+only available on the default debian installation.</li>
+<li>A couple of minor things did not work exactly the same way on both
+servers.</li>
+</ul>
+</blockquote>
+<p>Additionally, the script had one major annoyance from the beginning:</p>
+<p><tt class="docutils literal"><span class="pre">ncftp</span></tt> writes all server messages to <tt class="docutils literal"><span class="pre">stdout</span></tt>. So, to see errors, I had to
+refrain from redirecting <tt class="docutils literal"><span class="pre">ncftp</span></tt>&#8216;s output to <tt class="docutils literal"><span class="pre">/dev/null</span></tt>. But that in turn
+meant that I received a cron-mail on each execution. Eventually, I redirected
+the FTP output to <tt class="docutils literal"><span class="pre">/dev/null</span></tt>. That way I only got cron-mails when something
+else went wrong. But I had to check the FTP regularly to see if the backups
+arrived correctly.</p>
+<p>I always wanted to fix these issues, and add a couple more functionalities to
+the script. But given the complexity it already had, I thought it be time to
+rewrite it using a different scripting language. I&#8217;ve chosen Python as language
+of choice. A couple of reasons:</p>
+<blockquote>
+<ul class="simple">
+<li>It&#8217;s the language I am currently most proficient in</li>
+<li>It&#8217;s available on pretty much any standard Linux installation (other
+choice could have been perl.)</li>
+<li>It is very dynamic and let&#8217;s me write a modular application easily.</li>
+<li>The syntax is very concise!</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="execution-concept">
+<h1>Execution Concept<a class="headerlink" href="#execution-concept" title="Permalink to this headline">¶</a></h1>
+<p>The application works in two main steps:</p>
+<blockquote>
+<ul>
+<li><p class="first">Generate the backup data (DB dumps, archive generation, ...) inside a
+temporary &#8220;staging area&#8221;</p>
+<p>See <a class="reference internal" href="glossary.html#term-generator"><em class="xref std std-term">generator</em></a></p>
+</li>
+<li><p class="first">&#8220;publish&#8221; the generated files to one or more targets.</p>
+<p>See <a class="reference internal" href="glossary.html#term-target"><em class="xref std std-term">target</em></a></p>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The config file specifies what to backup (<tt class="docutils literal"><span class="pre">GENERATORS</span></tt>), and where to store
+it (<tt class="docutils literal"><span class="pre">TARGETS</span></tt>). See <a class="reference internal" href="configuration.html#configuration"><em>Configuration</em></a> for more information on the general
+configuration.</p>
+<p>The generators and targets are defined in python module inside generator_profile and
+target_profiles.  For a list of available generators and targets see
+<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></p>
+<p>If something is missing the list of plugins, you can easily write a new plugin
+with only minimal python knowledge. See <a class="reference internal" href="writing_plugins.html#writing-plugins"><em>Using Plugins</em></a> for more
+information.</p>
+<p>Application output uses the default python logging module. All informational
+messages are routed to stdout, and all errors/warnings are routed to stderr.
+This is useful for cron jobs: redirecting stdout to /dev/null still lets
+important messages through, so cron can take the appropriate steps (send
+mails?)</p>
+<p>Debugging messages are logged to a auto-rotating file inside the &#8220;logs&#8221;
+directory. This provides some semi-persistent storage. If something went wrong
+and you redirected stdout (or deleted the cron-mails), you still may find some
+useful info in that file.</p>
+</div>
+<div class="section" id="rough-roadmap">
+<h1>Rough Roadmap<a class="headerlink" href="#rough-roadmap" title="Permalink to this headline">¶</a></h1>
+<p>The main goal is to have a script which has all the features that I had in my
+previous bash script. These features are:</p>
+<blockquote>
+<ul class="simple">
+<li><strong>[DONE]</strong> Folder backups (split and simple)</li>
+<li><strong>[DONE]</strong> Push to folder</li>
+<li><strong>[DONE]</strong> Backup PostgreSQL</li>
+<li><strong>[DONE]</strong> Docs</li>
+<li><strong>[DONE]</strong> Backup MySQL</li>
+<li><strong>[DONE]</strong> Push to FTP</li>
+<li><strong>[DONE]</strong> Remove old files in target &#8220;dailyfolder&#8221; (using the retention
+value)</li>
+<li><strong>[DONE]</strong> Remove old files in target &#8220;ftp&#8221; (using the retention value)</li>
+</ul>
+</blockquote>
+<div class="section" id="additional-items-on-the-todo-list">
+<h2>Additional items on the todo list<a class="headerlink" href="#additional-items-on-the-todo-list" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<ul class="simple">
+<li>Push to a remote host via SSH</li>
+<li>Move logging configuration out of the code</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Why (History)</a></li>
+<li><a class="reference internal" href="#execution-concept">Execution Concept</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#rough-roadmap">Rough Roadmap</a><ul>
+<li><a class="reference internal" href="#additional-items-on-the-todo-list">Additional items on the todo list</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="writing_plugins.html"
+                        title="previous chapter">Using Plugins</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="glossary.html"
+                        title="next chapter">Glossary</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/how_and_why.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

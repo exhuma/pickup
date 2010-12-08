@@ -7,42 +7,34 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; pickup v1.2 documentation</title>
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <title><no title> &mdash; pickup v1.2 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    '../',
         VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pickup v1.2 documentation" href="index.html" />
-    <link rel="next" title="Available Plugins" href="available_plugins.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.2 documentation" href="../index.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="available_plugins.html" title="Available Plugins"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="installation.html" title="Installation"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">pickup v1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,153 +43,7 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="configuration">
-<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>The configuration file is a python file itself and can be placed wherever you
-see fit.</p>
-<p>This page explains the general configuration structure. Each <a class="reference internal" href="glossary.html#term-module"><em class="xref std std-term">module</em></a> may
-provide additional configuration options.  They can be defined in each module&#8217;s
-<tt class="docutils literal"><span class="pre">config</span></tt> dictionary. The details for each of these module-level configs can
-be found in <a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a>.</p>
-<div class="section" id="basic-example">
-<h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
-<p>The following configuration script will create a backup of each local home
-folder. Each folder will be stored as separate tarball:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
-<span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">[{</span>
-      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;local home folders&#39;</span><span class="p">,</span>
-      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
-      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&#39;/home&#39;</span><span class="p">,</span>
-         <span class="s">&#39;split&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
-         <span class="p">}}]</span>
-
-<span class="n">TARGETS</span> <span class="o">=</span> <span class="p">[{</span>
-      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
-      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&quot;dailyfolder&quot;</span><span class="p">,</span>
-      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&quot;/var/backups/daily&quot;</span><span class="p">,</span>
-         <span class="p">}}]</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="a-configuration-walkthrough">
-<h2>A configuration walkthrough<a class="headerlink" href="#a-configuration-walkthrough" title="Permalink to this headline">¶</a></h2>
-<p>Let&#8217;s construct a configuration file statement-by-statement.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This tells pickup that this configuration script conforms to the version &#8220;2.0&#8221;.
-This is used to detect if pickup can &#8220;understand&#8221; the directives in this config
-file. If the minor number differs, it usually means, that pickup is still able
-to work with this config, but new optional features have been added. Pickup
-will still continue to work, but issue a warning to make you aware of possible
-new features.</p>
-<p>If, on the other hand the major number differs, pickup will be unable to
-understand this config script and will abort with a critical error message.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
-</pre></div>
-</div>
-<p>This is the temporary folder name for the backups. If, like in this case the
-folder is relative, then it will be relative to the folder from which pickup
-was executed. Not the folder where pickup is installed. If you want to be safe,
-use an absolute foldername.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">[{</span>
-      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;local home folders&#39;</span><span class="p">,</span>
-      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&#39;folder&#39;</span><span class="p">,</span>
-      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&#39;/home&#39;</span><span class="p">,</span>
-         <span class="s">&#39;split&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
-         <span class="p">}}]</span>
-</pre></div>
-</div>
-<p>The <tt class="docutils literal"><span class="pre">GENERATORS</span></tt> list contains all the data &#8220;sources&#8221;. In other words, it
-contains all the modules which will generate backup data. These &#8220;profiles&#8221; will
-be executed in the order as they appear in the list.</p>
-<p>In this case, we will back-up data contained inside <tt class="docutils literal"><span class="pre">/home</span></tt> and for each
-folder contained therein, we will create a separate tarball. For more
-information, see <a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TARGETS</span> <span class="o">=</span> <span class="p">[{</span>
-      <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
-      <span class="s">&#39;profile&#39;</span><span class="p">:</span> <span class="s">&quot;dailyfolder&quot;</span><span class="p">,</span>
-      <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="s">&quot;/var/backups/daily&quot;</span><span class="p">,</span>
-         <span class="s">&#39;retention&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;days&#39;</span><span class="p">:</span> <span class="mi">7</span> <span class="p">}</span>
-         <span class="p">}}]</span>
-</pre></div>
-</div>
-<p>The <tt class="docutils literal"><span class="pre">TARGETS</span></tt> list contains all the destinations in which the created backup
-data should be distributed to. Again, the entries are process in the same order
-as they appear in the list.</p>
-<p>In this case, this will store the backups in a folder with the current date
-inside a &#8220;container&#8221; folder (<tt class="docutils literal"><span class="pre">/var/backups/daily</span></tt>). Folders older than 7 days
-will be deleted. See <a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a> for more information.</p>
-</div>
-<div class="section" id="required-values">
-<h2>Required values<a class="headerlink" href="#required-values" title="Permalink to this headline">¶</a></h2>
-<p>The following values must be specified:</p>
-<dl class="docutils">
-<dt><strong>CONFIG_VERSION</strong></dt>
-<dd><p class="first">This is used by the core application to determine if it knows how to read
-the config file. If this value is incorrect, the core will issue
-errors/warnings.</p>
-<p>The value is a tuple representing a major and minor number.</p>
-<p>It follows the following rule:</p>
-<blockquote class="last">
-<ul class="simple">
-<li>If an application change <em>requires</em> a change in the config, the major
-number will increase.</li>
-<li>If a change is made in the application which will still be able to
-function with an old config version, but may benefit from new fields,
-then the minor number will increase.</li>
-</ul>
-</blockquote>
-</dd>
-<dt><strong>STAGING_AREA</strong></dt>
-<dd>A <em>temporary</em> folder. All backup files will be created in that folder before
-pushed into the targets.</dd>
-<dt><strong>GENERATORS</strong></dt>
-<dd><p class="first">A list of generators. The generators will be processed in the same order as
-they appear in the config file. Each generator must have the following
-fields:</p>
-<blockquote class="last">
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">name</span></tt></dt>
-<dd>The name of the generator. This is used to generate folder and
-filenames for the backup files.</dd>
-<dt><tt class="docutils literal"><span class="pre">profile</span></tt></dt>
-<dd>The name of the <a class="reference internal" href="glossary.html#term-module"><em class="xref std std-term">module</em></a> used for this generator. See
-<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a> for a list of available profiles.</dd>
-<dt><tt class="docutils literal"><span class="pre">config</span></tt></dt>
-<dd>Config values for the generator profile. These fields depend on the
-underlying plugin. The values should be documented in
-<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></dd>
-</dl>
-</blockquote>
-</dd>
-<dt><strong>TARGETS</strong></dt>
-<dd><p class="first">A list of backup targets. The targets will be processed in the same order as
-they appear in the config file. Each target must have the following fields:</p>
-<blockquote class="last">
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">name</span></tt></dt>
-<dd>The name of the target (Mainly used to display it in the logs)</dd>
-<dt><tt class="docutils literal"><span class="pre">profile</span></tt></dt>
-<dd>The name of the <a class="reference internal" href="glossary.html#term-module"><em class="xref std std-term">module</em></a> used for this target. See
-<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a> for a list of available profiles.</dd>
-<dt><tt class="docutils literal"><span class="pre">config</span></tt></dt>
-<dd>Config values for the target profile. These fields depend on the
-underlying plugin. The values should be documented in
-<a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></dd>
-</dl>
-</blockquote>
-</dd>
-</dl>
-</div>
-<div class="section" id="advanced-example">
-<h2>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h2>
-<p id="advanced-config">As the config file is a python script, you can do pretty much everything you
+  <p id="advanced-config">As the config file is a python script, you can do pretty much everything you
 want with it. What this will show you:</p>
 <blockquote>
 <ul>
@@ -331,8 +177,6 @@ become arbitrarily complex.</p>
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
 
 
           </div>
@@ -340,31 +184,14 @@ become arbitrarily complex.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Configuration</a><ul>
-<li><a class="reference internal" href="#basic-example">Basic example</a></li>
-<li><a class="reference internal" href="#a-configuration-walkthrough">A configuration walkthrough</a></li>
-<li><a class="reference internal" href="#required-values">Required values</a></li>
-<li><a class="reference internal" href="#advanced-example">Advanced Example</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="installation.html"
-                        title="previous chapter">Installation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="available_plugins.html"
-                        title="next chapter">Available Plugins</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/configuration.txt"
+    <li><a href="../_sources/config_examples/advanced.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../search.html" method="get">
       <input type="text" name="q" size="18" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
@@ -383,18 +210,12 @@ become arbitrarily complex.</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
+          <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="available_plugins.html" title="Available Plugins"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="installation.html" title="Installation"
-             >previous</a> |</li>
-        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">pickup v1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

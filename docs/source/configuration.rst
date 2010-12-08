@@ -3,36 +3,23 @@
 Configuration
 =============
 
-The configuration file is a python file itself inside the subfolder ``config``.
-All values are stored as simple python dictionaries or variables. This page
-explains the general configuration structure. Each :term:`module` may provide
-additional configuration options.  They can be defined in each module's
+The configuration file is a python file itself and can be placed wherever you
+see fit.
+
+This page explains the general configuration structure. Each :term:`module` may
+provide additional configuration options.  They can be defined in each module's
 ``config`` dictionary. The details for each of these module-level configs can
 be found in :ref:`available_plugins`.
 
 Basic example
 -------------
 
-In its most simple form, a config file to
-backup one folder could look like this::
+.. include:: config_examples/basic.rst
 
+A configuration walkthrough
+---------------------------
 
-   CONFIG_VERSION = (2,0)
-   STAGING_AREA = "staging"
-   GENERATORS = [{
-         'name': '/var/www',
-         'profile': 'folder',
-         'config': {
-            'path': '/var/www',
-            'split': True,
-            }}]
-
-   TARGETS = [{
-         'name': "local",
-         'profile': "folder",
-         'config': {
-            'path': "/path/to/target",
-            }}]
+.. include:: config_examples/walkthrough.rst
 
 Required values
 ---------------
@@ -64,7 +51,8 @@ The following values must be specified:
    fields:
 
       ``name``
-         The name of the generator (Mainly used to display it in the logs)
+         The name of the generator. This is used to generate folder and
+         filenames for the backup files.
 
       ``profile``
          The name of the :term:`module` used for this generator. See
@@ -94,131 +82,4 @@ The following values must be specified:
 Advanced Example
 ----------------
 
-.. note::
-   Not all profiles shown in this example exist yet! It's mainly an example of
-   how things *could* look like.
-
-As the config file is a python script, you can do pretty much everything you
-want inside. The main differences are:
-
-   - Use of comments
-   - example use of an import
-   - A string replacement is used in the ``ssh`` target
-   - Instead of writing dictionaries using the ``{`` and ``}`` syntax, they are
-     constructed using the ``dict()`` builtin. This makes it easier to write
-     (and maybe even to read as well).
-
-.. note::
-   Not all source and target plugins listed in the following config file are
-   available yet!
-
-Advanced config file::
-
-   from datetime import timedelta
-
-   # Config version (major, minor)
-   CONFIG_VERSION = (1,0)
-
-   # A custom variable. Not used by the application itself, but used here, in
-   # the config script!
-   THE_BACKUP_DIR = "/var/backups/data"
-
-   # All backups will be created in this folder before being deployed to the
-   # targets
-   STAGING_AREA = "staging"
-
-   # Backup Sources. They will be processed in order
-   #
-   # Details on the config values should be documented in the source modules
-   SOURCES = [
-      dict(
-         name = 'MySQL',
-         profile = 'mysql',
-         config = dict(
-            # user should have full priviledges on everything
-            user = "root",
-            password = "mysecretpassword"
-            ),
-         ),
-      dict(
-         name = 'PostgreSQL 8.4',
-         profile = 'postgres',
-         config = dict(
-            host = 'localhost',
-            database = '*', # using '*' will dump all dbs
-            port = 5432
-            ),
-         ),
-      dict(
-         name = '/var/www',
-         profile = 'folder',
-         config = dict(
-            path = '/var/www',
-            split = True,
-            )
-         ),
-      dict(
-         name = '/var/git',
-         profile = 'folder',
-         config = dict(
-            path = '/var/git',
-            split = True,
-            )
-         ),
-      dict(
-         name = '/var/mail',
-         profile = 'folder',
-         config = dict(
-            path = '/var/mail',
-            )
-         ),
-      dict(
-         name = '/etc/apache2',
-         profile = 'folder',
-         config = dict(
-            path = '/etc/apache2',
-            )
-         ),
-      dict(
-         name = '/home/exhuma',
-         profile = 'folder',
-         config = dict(
-            path = '/home/exhuma',
-            )
-         ),
-      ]
-
-   # Backup targets. They will be processed in order.
-   #
-   # Details on the config values should be documented in the target modules
-   TARGETS = [
-      dict(
-         name = "local",
-         profile = "folder",
-         config = dict(
-            # retention: how long is old data kept. The value is used as keyword
-            # arguments dict for datetime.timedelta
-            retention = timedelta(days=7),
-            path = THE_BACKUP_DIR,
-            ),
-         ),
-      dict(
-         name = "ssh",
-         profile = "ssh",
-         config = dict(
-            ssh_key = "%s/id_dsa" % THE_BACKUP_DIR,
-            )
-         ),
-      dict(
-         name = "ftp",
-         profile = "ftp",
-         config = dict(
-            host="my.ftp.host",
-            username="ftpuser",
-            password="asis! Light!",
-            remote_folder="backups",
-            retention = timedelta(days=20),
-            )
-         ),
-   ]
-
+.. include:: config_examples/advanced.rst

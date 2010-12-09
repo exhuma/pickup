@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuration &mdash; pickup v1.2 documentation</title>
+    <title>Configuration &mdash; pickup v1.3 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.2',
+        VERSION:     '1.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pickup v1.2 documentation" href="index.html" />
+    <link rel="top" title="pickup v1.3 documentation" href="index.html" />
     <link rel="next" title="Available Plugins" href="available_plugins.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pickup v1.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -63,7 +63,7 @@ be found in <a class="reference internal" href="available_plugins.html#available
 <h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
 <p>The following configuration script will create a backup of each local home
 folder. Each folder will be stored as separate tarball:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">STAGING_AREA</span> <span class="o">=</span> <span class="s">&quot;staging&quot;</span>
 <span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">[{</span>
       <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;local home folders&#39;</span><span class="p">,</span>
@@ -85,10 +85,10 @@ folder. Each folder will be stored as separate tarball:</p>
 <div class="section" id="a-configuration-walkthrough">
 <h2>A configuration walkthrough<a class="headerlink" href="#a-configuration-walkthrough" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s construct a configuration file statement-by-statement.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This tells pickup that this configuration script conforms to the version &#8220;2.0&#8221;.
+<p>This tells pickup that this configuration script conforms to the version &#8220;2.1&#8221;.
 This is used to detect if pickup can &#8220;understand&#8221; the directives in this config
 file. If the minor number differs, it usually means, that pickup is still able
 to work with this config, but new optional features have been added. Pickup
@@ -137,14 +137,14 @@ will be deleted. See <a class="reference internal" href="available_plugins.html#
 <div class="section" id="required-values">
 <h2>Required values<a class="headerlink" href="#required-values" title="Permalink to this headline">¶</a></h2>
 <p>The following values must be specified:</p>
-<dl class="docutils">
-<dt><strong>CONFIG_VERSION</strong></dt>
-<dd><p class="first">This is used by the core application to determine if it knows how to read
+<p><strong>CONFIG_VERSION</strong></p>
+<blockquote>
+<p>This is used by the core application to determine if it knows how to read
 the config file. If this value is incorrect, the core will issue
 errors/warnings.</p>
 <p>The value is a tuple representing a major and minor number.</p>
 <p>It follows the following rule:</p>
-<blockquote class="last">
+<blockquote>
 <ul class="simple">
 <li>If an application change <em>requires</em> a change in the config, the major
 number will increase.</li>
@@ -153,15 +153,45 @@ function with an old config version, but may benefit from new fields,
 then the minor number will increase.</li>
 </ul>
 </blockquote>
-</dd>
+</blockquote>
+<p><strong>FIRST_TARGET_IS_STAGING</strong> (optional)</p>
+<blockquote>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.3.</span></p>
+<p>If this is set to &#8220;True&#8221;, then the first target profile will be used as
+staging area. Using this, you can avoid storing the data more than once on a
+local machine during the backup.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This will override the value of <tt class="docutils literal"><span class="pre">STAGING_AREA</span></tt>!</p>
+</div>
+<p>Restrictions apply though:</p>
+<blockquote>
+<ul class="simple">
+<li>The profile must me a local folder (currently, only <tt class="docutils literal"><span class="pre">dailyfolder</span></tt> is
+supported)</li>
+<li>The profile must return it&#8217;s target path using the <tt class="docutils literal"><span class="pre">folder()</span></tt> method.</li>
+</ul>
+</blockquote>
+</blockquote>
+<dl class="docutils">
 <dt><strong>STAGING_AREA</strong></dt>
-<dd>A <em>temporary</em> folder. All backup files will be created in that folder before
-pushed into the targets.</dd>
-<dt><strong>GENERATORS</strong></dt>
-<dd><p class="first">A list of generators. The generators will be processed in the same order as
+<dd><p class="first">A <em>temporary</em> folder. All backup files will be created in that folder before
+pushed into the targets.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If <tt class="docutils literal"><span class="pre">FIRST_TARGET_IS_STAGING</span></tt> is used, this value is ignored.</p>
+</div>
+</dd>
+</dl>
+<p><strong>GENERATORS</strong></p>
+<blockquote>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.1.</span></p>
+<p>A list of generators. The generators will be processed in the same order as
 they appear in the config file. Each generator must have the following
 fields:</p>
-<blockquote class="last">
+<blockquote>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">name</span></tt></dt>
 <dd>The name of the generator. This is used to generate folder and
@@ -175,7 +205,8 @@ underlying plugin. The values should be documented in
 <a class="reference internal" href="available_plugins.html#available-plugins"><em>Available Plugins</em></a></dd>
 </dl>
 </blockquote>
-</dd>
+</blockquote>
+<dl class="docutils">
 <dt><strong>TARGETS</strong></dt>
 <dd><p class="first">A list of backup targets. The targets will be processed in the same order as
 they appear in the config file. Each target must have the following fields:</p>
@@ -194,6 +225,12 @@ underlying plugin. The values should be documented in
 </blockquote>
 </dd>
 </dl>
+<p><strong>SOURCES</strong></p>
+<blockquote>
+<p class="deprecated">
+<span class="versionmodified">Deprecated since version 1.1.</span></p>
+<p>Use <tt class="docutils literal"><span class="pre">GENERATORS</span></tt> instead</p>
+</blockquote>
 </div>
 <div class="section" id="advanced-example">
 <h2>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h2>
@@ -224,7 +261,10 @@ become arbitrarily complex.</p>
 <span class="kn">import</span> <span class="nn">os.path</span>
 
 <span class="c"># Config version (major, minor)</span>
-<span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">CONFIG_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># Use the first target profile as staging area</span>
+<span class="n">FIRST_TARGET_IS_STAGING</span>
 
 <span class="c"># A custom variable. Not used by the application itself, but used here, in</span>
 <span class="c"># the config script!</span>
@@ -394,7 +434,7 @@ become arbitrarily complex.</p>
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pickup v1.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

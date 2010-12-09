@@ -27,7 +27,10 @@ Advanced config file::
    import os.path
 
    # Config version (major, minor)
-   CONFIG_VERSION = (2,0)
+   CONFIG_VERSION = (2,1)
+
+   # Use the first target profile as staging area
+   FIRST_TARGET_IS_STAGING
 
    # A custom variable. Not used by the application itself, but used here, in
    # the config script!

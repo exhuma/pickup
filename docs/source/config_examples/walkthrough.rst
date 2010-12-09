@@ -2,9 +2,9 @@ Let's construct a configuration file statement-by-statement.
 
 .. code-block:: python
 
-   CONFIG_VERSION = (2,0)
+   CONFIG_VERSION = (2,1)
 
-This tells pickup that this configuration script conforms to the version "2.0".
+This tells pickup that this configuration script conforms to the version "2.1".
 This is used to detect if pickup can "understand" the directives in this config
 file. If the minor number differs, it usually means, that pickup is still able
 to work with this config, but new optional features have been added. Pickup

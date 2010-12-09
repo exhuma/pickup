@@ -50,6 +50,8 @@ The following values must be specified:
    staging area. Using this, you can avoid storing the data more than once on a
    local machine during the backup.
 
+   .. note:: This will override the value of ``STAGING_AREA``!
+
    Restrictions apply though:
 
       - The profile must me a local folder (currently, only ``dailyfolder`` is
@@ -60,6 +62,8 @@ The following values must be specified:
 **STAGING_AREA**
    A *temporary* folder. All backup files will be created in that folder before
    pushed into the targets.
+
+   .. note:: If ``FIRST_TARGET_IS_STAGING`` is used, this value is ignored.
 
 **GENERATORS**
 

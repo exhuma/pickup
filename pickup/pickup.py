@@ -133,8 +133,15 @@ def setup_logging():
 
    if not exists("logs"):
       os.makedirs("logs")
-   debug_handler = RotatingFileHandler("logs/debug.log",
+      os.chmod("logs", 0700)
+
+   LOG_FILE = join("logs", "debug.log")
+   debug_handler = RotatingFileHandler(LOG_FILE,
          maxBytes=100000, backupCount=5)
+
+   if exists(LOG_FILE):
+      os.chmod(LOG_FILE, 0600)
+
    debug_handler.setLevel(logging.DEBUG)
    debug_handler.setFormatter(out_format)
 

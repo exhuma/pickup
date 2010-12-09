@@ -27,6 +27,7 @@ Required values
 The following values must be specified:
 
 **CONFIG_VERSION**
+
    This is used by the core application to determine if it knows how to read
    the config file. If this value is incorrect, the core will issue
    errors/warnings.
@@ -46,6 +47,9 @@ The following values must be specified:
    pushed into the targets.
 
 **GENERATORS**
+
+   .. versionadded:: 1.1
+
    A list of generators. The generators will be processed in the same order as
    they appear in the config file. Each generator must have the following
    fields:
@@ -78,6 +82,12 @@ The following values must be specified:
          Config values for the target profile. These fields depend on the
          underlying plugin. The values should be documented in
          :ref:`available_plugins`
+
+**SOURCES**
+
+   .. deprecated:: 1.1
+
+   Use ``GENERATORS`` instead
 
 Advanced Example
 ----------------

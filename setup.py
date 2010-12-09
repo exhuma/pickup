@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
    name = "pickup",
-   version = "1.2",
+   version = "1.3",
    packages = find_packages(),
    entry_points = { 'console_scripts': ['pickup = pickup.pickup:main'] },
    install_requires = [

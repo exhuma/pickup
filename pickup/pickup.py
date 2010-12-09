@@ -135,7 +135,7 @@ def setup_logging():
       os.makedirs("logs")
       os.chmod("logs", 0700)
 
-   LOG_FILE = join("logs", "debug.log")
+   LOG_FILE = join("logs", "pickup.log")
    debug_handler = RotatingFileHandler(LOG_FILE,
          maxBytes=100000, backupCount=5)
 

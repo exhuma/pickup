@@ -42,6 +42,21 @@ The following values must be specified:
         function with an old config version, but may benefit from new fields,
         then the minor number will increase.
 
+**FIRST_TARGET_IS_STAGING** (optional)
+
+   .. versionadded:: 1.3
+
+   If this is set to "True", then the first target profile will be used as
+   staging area. Using this, you can avoid storing the data more than once on a
+   local machine during the backup.
+
+   Restrictions apply though:
+
+      - The profile must me a local folder (currently, only ``dailyfolder`` is
+        supported)
+
+      - The profile must return it's target path using the ``folder()`` method.
+
 **STAGING_AREA**
    A *temporary* folder. All backup files will be created in that folder before
    pushed into the targets.

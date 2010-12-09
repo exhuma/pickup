@@ -41,7 +41,7 @@ config_instance = None
 
 #-----------------------------------------------------------------------------
 
-EXPECTED_CONFIG_VERSION = (2,0)
+EXPECTED_CONFIG_VERSION = (2,1)
 TERM = TerminalController()
 
 class ReverseLevelFilter(logging.Filter):
@@ -205,6 +205,21 @@ def get_profile_folder(container, profile_config):
       profile_folder = "%s-%d" % (profile_folder, counter)
    return profile_folder
 
+def load_profile(package, profile_config):
+   LOG.debug("Loading profile '%(name)s' [%(profile)s]" % profile_config )
+
+   profile = None
+   try:
+      profile = package.create(profile_config["profile"])
+      if not api_is_compatible(profile, (2,0)):
+         return
+      profile.init(profile_config)
+   except ImportError, exc:
+      LOG.error( "Unable to instantiate target profile %s. "
+            "Error message was: %s" % (profile_config["profile"], exc) )
+
+   return profile
+
 def run_profile(package, profile_config):
    """
    Run the generator/target profile
@@ -215,15 +230,7 @@ def run_profile(package, profile_config):
 
    LOG.info("Running '%(name)s' [%(profile)s]" % profile_config )
 
-   profile = None
-   try:
-      profile = package.create(profile_config["profile"])
-      if not api_is_compatible(profile, (1,0)):
-         return
-
-   except ImportError, exc:
-      LOG.error( "Unable to instantiate target profile %s. "
-            "Error message was: %s" % (profile_config["profile"], exc) )
+   profile = load_profile(package, profile_config)
    if not profile:
       return
 
@@ -245,7 +252,6 @@ def run_profile(package, profile_config):
       staging_folder = config_instance.STAGING_AREA
 
    try:
-      profile.init(profile_config)
       profile.run(staging_folder)
    except Exception, exc:
       LOG.error("Error staging '%s'. Error message: %s" %
@@ -271,6 +277,21 @@ def init():
 
    check_config()
 
+   first_target = None
+   if (hasattr(config_instance, "FIRST_TARGET_IS_STAGING") and
+         config_instance.FIRST_TARGET_IS_STAGING):
+      first_target = config_instance.TARGETS.pop(0)
+      if first_target.get("profile") not in ('dailyfolder',):
+         LOG.error("When using the first target as staging, it must be a local folder!")
+         sys.exit(9)
+
+      # retrieve the folder where the module will put the files
+      profile = load_profile(target_profile, first_target)
+      if not profile.folder():
+         LOG.error("The target %s cannot be used as staging area (it's not"
+               " returning a local folder path )" % profile.__name__)
+      config_instance.STAGING_AREA = profile.folder()
+
    if not exists(config_instance.STAGING_AREA):
       os.makedirs(config_instance.STAGING_AREA)
       LOG.info("Staging folder '%s' created" % abspath(config_instance.STAGING_AREA))
@@ -284,7 +305,7 @@ def main():
    init()
 
    now = datetime.now()
-   LOG.info("Fetching generators")
+   LOG.info("Fetching from generators")
    for generator in config_instance.GENERATORS:
       run_profile(generator_profile, generator)
 
@@ -292,8 +313,10 @@ def main():
    for target in config_instance.TARGETS:
       run_profile(target_profile, target)
 
-   LOG.info("Deleting staging area")
-   rmtree(config_instance.STAGING_AREA)
+   if (not hasattr(config_instance, "FIRST_TARGET_IS_STAGING") or
+         not config_instance.FIRST_TARGET_IS_STAGING):
+      LOG.info("Deleting staging area")
+      rmtree(config_instance.STAGING_AREA)
 
    LOG.info("Backup session finished.")
 

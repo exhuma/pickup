@@ -53,7 +53,7 @@ from subprocess import Popen, PIPE
 import shlex
 
 LOG = logging.getLogger(__name__)
-API_VERSION = (1,0)
+API_VERSION = (2,0)
 CONFIG = {}
 SOURCE = {}
 

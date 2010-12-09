@@ -77,7 +77,7 @@ import MySQLdb
 from subprocess import Popen, PIPE
 from os.path import join
 LOG = logging.getLogger(__name__)
-API_VERSION = (1,0)
+API_VERSION = (2,0)
 CONFIG = {}
 
 def init(source_dict):

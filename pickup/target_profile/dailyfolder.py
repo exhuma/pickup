@@ -51,7 +51,7 @@ import logging
 import os
 
 LOG = logging.getLogger(__name__)
-API_VERSION = (1,0)
+API_VERSION = (2,0)
 CONFIG = {}
 TARGET = {}
 
@@ -59,6 +59,9 @@ def init(target):
    CONFIG.update(target['config'])
    TARGET.update(target)
    LOG.debug("Initialised '%s' with %r" % ( __name__, CONFIG))
+
+def folder():
+   return join(CONFIG['path'], datetime.now().strftime('%Y-%m-%d'))
 
 def remove_old_files(root, timedelta_params):
    delta = timedelta(**timedelta_params)
@@ -86,6 +89,5 @@ def run(staging_area):
       remove_old_files(CONFIG['path'], timedelta_params)
 
    # store new files
-   now = datetime.now()
-   copytree(staging_area, join(CONFIG['path'], now.strftime('%Y-%m-%d')))
+   copytree(staging_area, folder())
 

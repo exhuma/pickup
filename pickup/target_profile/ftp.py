@@ -69,7 +69,7 @@ import os
 import os.path
 
 LOG = logging.getLogger(__name__)
-API_VERSION = (1,0)
+API_VERSION = (2,0)
 CONFIG = {}
 FOLDER_FORMAT = "%Y-%m-%d"
 
@@ -85,6 +85,9 @@ def try_mkd( conn, foldername ):
          pass
       else:
          raise
+
+def folder():
+   return
 
 def remove_old_files(conn, timedelta_params):
    delta = timedelta(**timedelta_params)

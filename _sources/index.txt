@@ -16,6 +16,7 @@ Contents
    configuration
    available_plugins
    writing_plugins
+   logging
    how_and_why
    glossary
 

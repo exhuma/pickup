@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Logging &mdash; pickup v1.2 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pickup v1.2 documentation" href="index.html" />
+    <link rel="next" title="Why (History)" href="how_and_why.html" />
+    <link rel="prev" title="Using Plugins" href="writing_plugins.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="how_and_why.html" title="Why (History)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logging">
+<span id="id1"></span><h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
+<p>Pickup uses <a class="reference external" href="http://docs.python.org/library/logging.html">the standard python logging module</a>. While not <em>yet</em> possible, you
+will be able to take control over how and where messages are logged eventually.</p>
+<div class="section" id="current-configuration">
+<h2>Current Configuration<a class="headerlink" href="#current-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Currently, the configuration is hardcoded inside <tt class="docutils literal"><span class="pre">pickup.py</span></tt> with the
+following settings.</p>
+<p>Two handlers:</p>
+<blockquote>
+<ul>
+<li><p class="first">Console Handler</p>
+<p>Always writes messages <em>above</em> severity <strong>INFO</strong> to <tt class="docutils literal"><span class="pre">stderr</span></tt>.
+<strong>DEBUG</strong> and <strong>INFO</strong> messages will be sent to <tt class="docutils literal"><span class="pre">stdout</span></tt> unless the
+command line flag <tt class="docutils literal"><span class="pre">-q</span></tt> is specified.</p>
+</li>
+<li><p class="first">An auto-rotating file handler</p>
+<p>This handler always write <strong>everything</strong> to a file <tt class="docutils literal"><span class="pre">logs/pickup.log</span></tt>.
+The path is relative to <strong>the current working folder</strong>. This means, if you
+run the script from a cronjob, the current working folder will be the home
+folder of the user which executes the script.</p>
+<p>For security reasons, the file is set to mode 0600 (only accessible by
+it&#8217;s owner).</p>
+</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Logging</a><ul>
+<li><a class="reference internal" href="#current-configuration">Current Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="writing_plugins.html"
+                        title="previous chapter">Using Plugins</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="how_and_why.html"
+                        title="next chapter">Why (History)</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/logging.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="how_and_why.html" title="Why (History)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Using Plugins"
+             >previous</a> |</li>
+        <li><a href="index.html">pickup v1.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Michel Albert.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+    </div>
+  </body>
+</html>

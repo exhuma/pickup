@@ -67,6 +67,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 import os.path
+from ftplib import FTP, error_perm
 
 LOG = logging.getLogger(__name__)
 API_VERSION = (2,0)
@@ -89,11 +90,34 @@ def try_mkd( conn, foldername ):
 def folder():
    return
 
+def rmrf(conn, path):
+   LOG.debug('Recursively deleting %s' % path)
+   conn.cwd(path)
+   for entry in conn.nlst():
+      if entry in (".", ".."):
+         continue
+
+      try:
+         conn.delete(entry)
+      except error_perm, exc:
+         # Permission Denied (most likely a directory)
+         try:
+            rmrf(conn, entry)
+         except Exception, exc2:
+            # Probably not a directory. Skip this entry
+            LOG.warning(str(exc2))
+            pass
+   conn.cwd("..")
+   conn.rmd(path)
+
 def remove_old_files(conn, timedelta_params):
    delta = timedelta(**timedelta_params)
    threshold_date = datetime.now() - delta
    LOG.info("Removing files created before %s" % threshold_date)
    for entry in conn.nlst():
+      if entry in ('.', '..'):
+         continue
+
       try:
          entry_date = datetime.strptime(entry, FOLDER_FORMAT)
          LOG.debug("Inspecting %s (threshold=%s, todelete=%s)" % (
@@ -101,7 +125,7 @@ def remove_old_files(conn, timedelta_params):
          if entry_date < threshold_date:
             LOG.info("Deleting %s" % entry)
             if not CONFIG.get("dry_run", False):
-               conn.rmd(entry)
+               rmrf(conn, entry)
       except ValueError, e:
          LOG.warning( str(e) )
    else:
@@ -117,7 +141,6 @@ def run_ftp(staging_area):
    os.chdir(staging_area)
    current_date_folder = datetime.now().strftime(FOLDER_FORMAT)
 
-   from ftplib import FTP
    ftp = FTP(CONFIG['host'],
          user=CONFIG['username'],
          passwd=CONFIG['password']

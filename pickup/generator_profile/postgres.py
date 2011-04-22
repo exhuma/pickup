@@ -22,12 +22,17 @@ The following fields are used by this plugin:
       The port on which the database is running
 
    **database**
-      The database to backup. This can be ``'*'`` to backup all databases
+      Tihs can be either a list of database names to backup, or simply one
+      database name to backup. This can also be ``'*'`` to backup all databases
       (excluding ``template0``, ``template1`` and ``postgres``)
 
       .. note:: In order for the wildcard ``"*"`` to work in the config file,
                 the user must be able to connect to "template1" and must have
                 read access to the system table "pg_database".
+
+   **ignore_dbs**
+      A list of databases to ignore (mostly useful when using ``'*'`` as
+      database source.
 
    **pg_dump_params** (string) *optional*
       These parameters are passed directly to ``pg_dump``.
@@ -65,6 +70,7 @@ Configuration Example
          host = 'localhost',
          user = 'backup',
          database = '*', # using '*' will dump all dbs
+         ignore_dbs = ['my_test_db'],
          port = 5432,
          pg_dump_params = "-Ft -c",
          ),
@@ -114,7 +120,7 @@ import logging
 import psycopg2
 import shlex
 from subprocess import Popen, PIPE
-from os.path import join, exists, abspath
+from os.path import join
 
 LOG = logging.getLogger(__name__)
 API_VERSION = (2,0)
@@ -124,6 +130,8 @@ SOURCE = {}
 def init(source):
    CONFIG.update(source['config'])
    SOURCE.update(source)
+   CONFIG.setdefault('ignore_dbs', [])
+
    LOG.debug("Initialised '%s' with %r" % ( __name__, CONFIG))
 
 def list_dbs():
@@ -200,9 +208,17 @@ def dump_globals(staging_area):
 def run(staging_area):
 
    dump_globals(staging_area)
-   if CONFIG['database'] == '*':
-      for dbname in list_dbs():
+
+   if isinstance(CONFIG['database'], basestring):
+      if CONFIG['database'] == '*':
+         for dbname in list_dbs():
+            dump_one_db(staging_area, dbname)
+      else:
+         dump_one_db(staging_area, CONFIG['database'])
+   elif isinstance(CONFIG['database'], list):
+      for dbname in CONFIG['database']:
+         if CONFIG['ignore_dbs'] and dbname in CONFIG['ignore_dbs']:
+            continue
          dump_one_db(staging_area, dbname)
-   else:
-      dump_one_db(staging_area, CONFIG['database'])
+
 

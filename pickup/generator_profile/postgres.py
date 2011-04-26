@@ -1,6 +1,6 @@
 """
 This module will dump the databases running ``pg_dump``. The output will be run
-through ``bzip2``.
+through ``gzip``.
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -175,8 +175,8 @@ def dump_one_db(staging_area, dbname):
    command.append( dbname )
 
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
-   p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
-      join(staging_area, "%s.bz2" % dbname), "wb"), stderr=PIPE )
+   p2 = Popen( "gzip", stdin=p1.stdout, stdout=open(
+      join(staging_area, "%s.gz" % dbname), "wb"), stderr=PIPE )
 
    p1.wait()
    p2.wait()
@@ -185,7 +185,7 @@ def dump_one_db(staging_area, dbname):
       LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
 
    if p2.returncode != 0:
-      LOG.error("Error while running bzip2: %s" % p2.stderr.read())
+      LOG.error("Error while running gzip: %s" % p2.stderr.read())
 
 def dump_globals(staging_area):
    LOG.info("Dumping posgtres globals")
@@ -193,8 +193,8 @@ def dump_globals(staging_area):
    command.extend( get_params("pg_dumpall") )
 
    p1 = Popen( command, stdout=PIPE, stderr=PIPE )
-   p2 = Popen( "bzip2", stdin=p1.stdout, stdout=open(
-      join(staging_area, "globals.bz2" ), "wb"), stderr=PIPE )
+   p2 = Popen( "gzip", stdin=p1.stdout, stdout=open(
+      join(staging_area, "globals.gz" ), "wb"), stderr=PIPE )
 
    p1.wait()
    p2.wait()
@@ -203,7 +203,7 @@ def dump_globals(staging_area):
       LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
 
    if p2.returncode != 0:
-      LOG.error("Error while running bzip2: %s" % p2.stderr.read())
+      LOG.error("Error while running gzip: %s" % p2.stderr.read())
 
 def run(staging_area):
 

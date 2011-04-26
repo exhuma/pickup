@@ -213,6 +213,8 @@ def run(staging_area):
       if CONFIG['database'] == '*':
          for dbname in list_dbs():
             if CONFIG['ignore_dbs'] and dbname in CONFIG['ignore_dbs']:
+                LOG.info("Database %r has been explicitly ignored "
+                        "via the config file" % dbname)
                 continue
             dump_one_db(staging_area, dbname)
       else:

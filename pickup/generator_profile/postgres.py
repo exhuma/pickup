@@ -212,13 +212,13 @@ def run(staging_area):
    if isinstance(CONFIG['database'], basestring):
       if CONFIG['database'] == '*':
          for dbname in list_dbs():
+            if CONFIG['ignore_dbs'] and dbname in CONFIG['ignore_dbs']:
+                continue
             dump_one_db(staging_area, dbname)
       else:
          dump_one_db(staging_area, CONFIG['database'])
    elif isinstance(CONFIG['database'], list):
       for dbname in CONFIG['database']:
-         if CONFIG['ignore_dbs'] and dbname in CONFIG['ignore_dbs']:
-            continue
          dump_one_db(staging_area, dbname)
 
 

@@ -22,7 +22,7 @@
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from optparse import OptionParser
-from os.path import exists, abspath, join
+from os.path import exists, abspath, join, dirname
 from shutil import rmtree
 import logging
 import os
@@ -258,6 +258,48 @@ def run_profile(package, profile_config):
                 (profile_config['name'], exc))
         LOG.exception(exc)
 
+def get_lock_file():
+    """
+    Returns a lock file.
+    """
+    if os.name == 'posix':
+        return '/var/run/pickup.pid'
+    elif os.name == 'nt':
+        lock_file = join(os.environ['APPDATA'], 'pickup', 'pickup.pid')
+        os.makedirs(dirname(lock_file))
+        return lock_file
+    else:
+        LOG.error('Unable to create the lock file on this OS (%r)' % os.name)
+        sys.exit(9)
+
+def acquire_lock():
+    """
+    This method is used to prevent multiple instances running at the same time.
+    It creates a lock file containing the current PID (if available).
+
+    If the file exists, the application will exit with an error.
+    """
+
+    lock_file = get_lock_file()
+    if exists(lock_file):
+        LOG.critical('Lock file %r exists already. Is the process still running? Exiting with error...' % lock_file)
+        sys.exit(9)
+
+    LOG.info('Creating lock file: %r' % lock_file)
+    with open(lock_file, 'w') as fptr:
+        fptr.write("%d" % os.getpid())
+
+def release_lock():
+    """
+    Releases the process lock acquired via `acquire_lock`.
+    """
+    lock_file = get_lock_file()
+    if exists(lock_file):
+        LOG.info('Removing lock file %r' % lock_file)
+        os.unlink(lock_file)
+    else:
+        LOG.warning('Lock file %r did not exist.' % lock_file)
+
 def init():
     global OPTIONS, ARGS, config_instance
 
@@ -304,6 +346,8 @@ def main():
 
     init()
 
+    acquire_lock()
+
     now = datetime.now()
     LOG.info("Fetching from generators")
     for generator in config_instance.GENERATORS:
@@ -317,6 +361,8 @@ def main():
             not config_instance.FIRST_TARGET_IS_STAGING):
         LOG.info("Deleting staging area")
         rmtree(config_instance.STAGING_AREA)
+
+    release_lock()
 
     LOG.info("Backup session finished.")
 

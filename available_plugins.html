@@ -90,7 +90,7 @@ False).</dd>
 <div class="section" id="module-pickup.generator_profile.postgres">
 <span id="postgres"></span><h3>postgres<a class="headerlink" href="#module-pickup.generator_profile.postgres" title="Permalink to this headline">¶</a></h3>
 <p>This module will dump the databases running <tt class="docutils literal"><span class="pre">pg_dump</span></tt>. The output will be run
-through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
+through <tt class="docutils literal"><span class="pre">gzip</span></tt>.</p>
 <div class="section" id="prerequisites">
 <h4>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h4>
 <blockquote>
@@ -111,7 +111,8 @@ through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
 <dt><strong>port</strong></dt>
 <dd>The port on which the database is running</dd>
 <dt><strong>database</strong></dt>
-<dd><p class="first">The database to backup. This can be <tt class="docutils literal"><span class="pre">'*'</span></tt> to backup all databases
+<dd><p class="first">Tihs can be either a list of database names to backup, or simply one
+database name to backup. This can also be <tt class="docutils literal"><span class="pre">'*'</span></tt> to backup all databases
 (excluding <tt class="docutils literal"><span class="pre">template0</span></tt>, <tt class="docutils literal"><span class="pre">template1</span></tt> and <tt class="docutils literal"><span class="pre">postgres</span></tt>)</p>
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
@@ -120,6 +121,9 @@ the user must be able to connect to &#8220;template1&#8221; and must have
 read access to the system table &#8220;pg_database&#8221;.</p>
 </div>
 </dd>
+<dt><strong>ignore_dbs</strong></dt>
+<dd>A list of databases to ignore (mostly useful when using <tt class="docutils literal"><span class="pre">'*'</span></tt> as
+database source.</dd>
 <dt><strong>pg_dump_params</strong> (string) <em>optional</em></dt>
 <dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">pg_dump</span></tt>.</p>
 <div class="last admonition warning">
@@ -155,6 +159,7 @@ password) is automatically added. See the section
       <span class="n">host</span> <span class="o">=</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
       <span class="n">user</span> <span class="o">=</span> <span class="s">&#39;backup&#39;</span><span class="p">,</span>
       <span class="n">database</span> <span class="o">=</span> <span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="c"># using &#39;*&#39; will dump all dbs</span>
+      <span class="n">ignore_dbs</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;my_test_db&#39;</span><span class="p">],</span>
       <span class="n">port</span> <span class="o">=</span> <span class="mi">5432</span><span class="p">,</span>
       <span class="n">pg_dump_params</span> <span class="o">=</span> <span class="s">&quot;-Ft -c&quot;</span><span class="p">,</span>
       <span class="p">),</span>
@@ -201,81 +206,8 @@ entries first when you are using wildcards.) If an entry needs to contain
 </blockquote>
 </div>
 </div>
-<div class="section" id="module-pickup.generator_profile.mysql">
-<span id="mysql"></span><h3>mysql<a class="headerlink" href="#module-pickup.generator_profile.mysql" title="Permalink to this headline">¶</a></h3>
-<p>This module will dump MySQL databases running <tt class="docutils literal"><span class="pre">mysqldump</span></tt>. The output will be
-run through <tt class="docutils literal"><span class="pre">bzip2</span></tt>.</p>
-<div class="section" id="id4">
-<h4>Prerequisites<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">mysql-python</span></tt> must be installed (<tt class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python-mysqldb</span></tt>)</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="id5">
-<h4>Configuration<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-<p>The following fields are used by this plugin:</p>
-<blockquote>
-<dl class="docutils">
-<dt><strong>database</strong> (string)</dt>
-<dd><p class="first">The database to backup. This can be <tt class="docutils literal"><span class="pre">'*'</span></tt> to backup all databases
-(excluding <tt class="docutils literal"><span class="pre">information_schema</span></tt>)</p>
-<div class="last admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">In order for the wildcard <tt class="docutils literal"><span class="pre">&quot;*&quot;</span></tt> to work in the config file,
-the user must be able to connect to &#8220;mysql&#8221; and must have
-read access to the table &#8220;db&#8221;.</p>
-</div>
-</dd>
-<dt><strong>host</strong> (string) <em>optional</em> (default=&#8221;localhost&#8221;)</dt>
-<dd>The host on which the database is running</dd>
-<dt><strong>user</strong> (string) <em>optional</em> (default=&#8221;root&#8221;)</dt>
-<dd>The user used to connect to the DB</dd>
-<dt><strong>password</strong> (string) <em>optional</em> (default=&#8221;&#8220;)</dt>
-<dd>The password used to connect to the DB</dd>
-<dt><strong>port</strong> (string/int) <em>optional</em> (default=3306)</dt>
-<dd>The port on which the database is running</dd>
-<dt><strong>mysqldump_params</strong> (string) <em>optional</em></dt>
-<dd><p class="first">These parameters are passed directly to <tt class="docutils literal"><span class="pre">mysqldump</span></tt>.</p>
-<div class="last admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>The parameters for host, user, port and password (<tt class="docutils literal"><span class="pre">-h</span></tt>,
-<tt class="docutils literal"><span class="pre">-u</span></tt>, <tt class="docutils literal"><span class="pre">-p</span></tt> and <tt class="docutils literal"><span class="pre">-P</span></tt> respectively) should be
-<strong>avoided</strong>! The plugin uses the settings <tt class="docutils literal"><span class="pre">host</span></tt>, <tt class="docutils literal"><span class="pre">user</span></tt>
-and <tt class="docutils literal"><span class="pre">port</span></tt> to set these automatically.</p>
-<p class="last">The plugin uses two types of connection: A programmatic
-connection using <tt class="docutils literal"><span class="pre">libmysql</span></tt> and indirect connection using
-the <tt class="docutils literal"><span class="pre">mysqldump</span></tt> executables. The params specified in this
-config variable will <strong>only</strong> be passed to <tt class="docutils literal"><span class="pre">mysqldump</span></tt>. So
-if you specify other host/user/password/port variables as
-specified in the dedicated config variables this may have
-unexpected results.</p>
-</div>
-</dd>
-</dl>
-</blockquote>
-</div>
-<div class="section" id="id6">
-<h4>Configuration Example<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python"><pre>dict(
-   name = 'MySQL',
-   profile = 'mysql',
-   config = dict(
-      database = "*",
-      port = "3306",
-      host = "localhost",
-      user = "backupuser",
-      password = "foobar"
-      mysqldump_params = "",
-      connection_params = dict(
-         charset='utf8',
-         compress=True
-      )
-   ),
-),</pre>
-</div>
-</div>
+<div class="section" id="mysql">
+<h3>mysql<a class="headerlink" href="#mysql" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="module-pickup.generator_profile.command">
 <span id="command"></span><h3>command<a class="headerlink" href="#module-pickup.generator_profile.command" title="Permalink to this headline">¶</a></h3>
@@ -287,8 +219,8 @@ to stdout.txt and stderr.txt respectively.</p>
 Popen! If you want to do this it is recommended to write an intermediary
 shell script.</p>
 </div>
-<div class="section" id="id7">
-<h4>Configuration<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id4">
+<h4>Configuration<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
@@ -313,8 +245,8 @@ in the staging area will not be created!</p>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id8">
-<h4>Configuration Example<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id5">
+<h4>Configuration Example<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;test command&#39;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;command&#39;</span><span class="p">,</span>
@@ -328,87 +260,8 @@ in the staging area will not be created!</p>
 </div>
 </div>
 </div>
-<div class="section" id="module-pickup.generator_profile.remote_tar">
-<span id="remote-tar"></span><h3>remote_tar<a class="headerlink" href="#module-pickup.generator_profile.remote_tar" title="Permalink to this headline">¶</a></h3>
-<p>The remote_tar plugin runs a tar command on a remote host and retrieves the
-generated tar file. In this initial version, the details are specified in the
-config variable &#8220;tar_params&#8221;.</p>
-<div class="section" id="id9">
-<h4>Configuration<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
-<p>The following fields are used by this plugin:</p>
-<blockquote>
-<dl class="docutils">
-<dt><strong>username</strong> (string)</dt>
-<dd>The username to connect as to the remote host</dd>
-<dt><strong>hostname</strong> (string)</dt>
-<dd>The hostname to connect to.</dd>
-<dt><strong>tar_params</strong> (string)</dt>
-<dd><p class="first">The parameters passed to the tar command (f.ex.: <tt class="docutils literal"><span class="pre">-cz</span> <span class="pre">/path/to/files</span></tt>)</p>
-<div class="last admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Do not specify a target filename with the <tt class="docutils literal"><span class="pre">-f</span></tt> parameter!
-This plugin uses <tt class="docutils literal"><span class="pre">mktemp</span></tt> to create a file as securely and
-uniquely as possible! On the other hand, when using the
-<tt class="docutils literal"><span class="pre">-f</span></tt> parameter, this plugin will not know which file to
-transfer over! Use the config option &#8220;target_filename&#8221;
-instead!</p>
-</div>
-</dd>
-<dt><strong>target_filename</strong> (string)</dt>
-<dd>The <strong>local</strong> filename (that is: The filename that is created inside the
-staging area)</dd>
-<dt><strong>port</strong> (int) <em>optional</em></dt>
-<dd>The port to connect to (default=22)</dd>
-<dt><strong>password</strong> (string) <em>optional</em></dt>
-<dd><p class="first">The password for the user. (default=None)</p>
-<div class="last admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Leave this empty if you want to use privat/public key
-authentication (see: &#8220;key_filename&#8221;)</p>
-</div>
-</dd>
-<dt><strong>key_filename</strong> (string|list of strings) <em>optional</em></dt>
-<dd><p class="first">A filename (or list of filenames) which is/are used as private/public key
-authentication.</p>
-<div class="last admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Leave this empty if you want to use password authentication
-(see: &#8220;password&#8221;)</p>
-</div>
-</dd>
-<dt><strong>tmpfolder</strong> (string) <em>optional</em></dt>
-<dd><p class="first">A folder on the <strong>remote</strong> machine! If this is left empty, the default
-system location is used (usually <tt class="docutils literal"><span class="pre">/tmp</span></tt>).</p>
-<div class="last admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Leaving this empty <em>may</em> be a potential security risk as
-everybody has read access to <tt class="docutils literal"><span class="pre">/tmp</span></tt>! This value is used
-with <tt class="docutils literal"><span class="pre">mktemp</span></tt>.  <tt class="docutils literal"><span class="pre">mktemp</span></tt> usually creates files with mode
-<tt class="docutils literal"><span class="pre">0600</span></tt> so this is less of a concern. It may be useful,
-where this is not ensured.</p>
-</div>
-</dd>
-</dl>
-</blockquote>
-</div>
-<div class="section" id="id10">
-<h4>Configuration Example<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
-   <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;My home folder&#39;</span><span class="p">,</span>
-   <span class="n">profile</span> <span class="o">=</span> <span class="s">&#39;remote_tar&#39;</span><span class="p">,</span>
-   <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-      <span class="n">username</span> <span class="o">=</span> <span class="s">&#39;ninjamonkey&#39;</span><span class="p">,</span>
-      <span class="n">hostname</span> <span class="o">=</span> <span class="s">&#39;batcave&#39;</span><span class="p">,</span>
-      <span class="n">port</span> <span class="o">=</span> <span class="mi">64222</span><span class="p">,</span>
-      <span class="n">key_filename</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;/home/ninjamonkey/ssh_keys/batcave.rsa&quot;</span><span class="p">],</span>
-      <span class="n">tmpfolder</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
-      <span class="n">tar_params</span> <span class="o">=</span> <span class="s">&quot;-cz /home/ninjamonkey&quot;</span><span class="p">,</span>
-      <span class="n">target_filename</span> <span class="o">=</span> <span class="s">&quot;home_ninjamonkey.tar.gz&quot;</span>
-      <span class="p">)</span>
-   <span class="p">),</span>
-</pre></div>
-</div>
-</div>
+<div class="section" id="remote-tar">
+<h3>remote_tar<a class="headerlink" href="#remote-tar" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="targets">
@@ -417,8 +270,8 @@ where this is not ensured.</p>
 <span id="dailyfolder"></span><h3>dailyfolder<a class="headerlink" href="#module-pickup.target_profile.dailyfolder" title="Permalink to this headline">¶</a></h3>
 <p>Creates a subfolder with the current date (YYYY-MM-DD) in the target folder and
 copies everything inside the staging area into that folder</p>
-<div class="section" id="id11">
-<h4>Configuration<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id6">
+<h4>Configuration<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
@@ -440,8 +293,8 @@ you want!</p>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id12">
-<h4>Configuration Example<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id7">
+<h4>Configuration Example<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;local&quot;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;folder&quot;</span><span class="p">,</span>
@@ -462,8 +315,8 @@ you want!</p>
 <p>Uploads the staging folder to an FTP host. On the remote host a new subfolder
 with the current date will be created (f.ex.: &#8216;2010-11-01&#8217;). The staging area
 will be stored in that folder.</p>
-<div class="section" id="id13">
-<h4>Configuration<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id8">
+<h4>Configuration<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <p>The following fields are used by this plugin:</p>
 <blockquote>
 <dl class="docutils">
@@ -501,8 +354,8 @@ accurate simulation.</p>
 </dl>
 </blockquote>
 </div>
-<div class="section" id="id15">
-<h4>Configuration Example<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id10">
+<h4>Configuration Example<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python"><div class="highlight"><pre><span class="nb">dict</span><span class="p">(</span>
    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;my ftp host&quot;</span><span class="p">,</span>
    <span class="n">profile</span> <span class="o">=</span> <span class="s">&quot;ftp&quot;</span><span class="p">,</span>
@@ -546,33 +399,24 @@ accurate simulation.</p>
 <li><a class="reference internal" href="#a-note-on-passwords">A note on passwords</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pickup.generator_profile.mysql">mysql</a><ul>
-<li><a class="reference internal" href="#id4">Prerequisites</a></li>
-<li><a class="reference internal" href="#id5">Configuration</a></li>
-<li><a class="reference internal" href="#id6">Configuration Example</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#mysql">mysql</a></li>
 <li><a class="reference internal" href="#module-pickup.generator_profile.command">command</a><ul>
-<li><a class="reference internal" href="#id7">Configuration</a></li>
-<li><a class="reference internal" href="#id8">Configuration Example</a></li>
+<li><a class="reference internal" href="#id4">Configuration</a></li>
+<li><a class="reference internal" href="#id5">Configuration Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pickup.generator_profile.remote_tar">remote_tar</a><ul>
-<li><a class="reference internal" href="#id9">Configuration</a></li>
-<li><a class="reference internal" href="#id10">Configuration Example</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#remote-tar">remote_tar</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#targets">Targets</a><ul>
 <li><a class="reference internal" href="#module-pickup.target_profile.dailyfolder">dailyfolder</a><ul>
-<li><a class="reference internal" href="#id11">Configuration</a></li>
-<li><a class="reference internal" href="#id12">Configuration Example</a></li>
+<li><a class="reference internal" href="#id6">Configuration</a></li>
+<li><a class="reference internal" href="#id7">Configuration Example</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-pickup.target_profile.ftp">ftp</a><ul>
-<li><a class="reference internal" href="#id13">Configuration</a></li>
-<li><a class="reference internal" href="#id15">Configuration Example</a></li>
+<li><a class="reference internal" href="#id8">Configuration</a></li>
+<li><a class="reference internal" href="#id10">Configuration Example</a></li>
 </ul>
 </li>
 </ul>
@@ -629,7 +473,7 @@ accurate simulation.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Michel Albert.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0b2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
     </div>
   </body>
 </html>

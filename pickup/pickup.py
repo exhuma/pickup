@@ -41,7 +41,7 @@ config_instance = None
 
 #-----------------------------------------------------------------------------
 
-EXPECTED_CONFIG_VERSION = (2,1)
+EXPECTED_CONFIG_VERSION = (2,2)
 TERM = TerminalController()
 
 class ReverseLevelFilter(logging.Filter):

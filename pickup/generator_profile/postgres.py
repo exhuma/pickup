@@ -22,13 +22,26 @@ The following fields are used by this plugin:
       The port on which the database is running
 
    **database**
-      Tihs can be either a list of database names to backup, or simply one
+      This can be either a list of database names to backup, or simply one
       database name to backup. This can also be ``'*'`` to backup all databases
       (excluding ``template0``, ``template1`` and ``postgres``)
 
       .. note:: In order for the wildcard ``"*"`` to work in the config file,
                 the user must be able to connect to "template1" and must have
                 read access to the system table "pg_database".
+
+   **compress_command**
+      If specified and non-empty, this command is used to compress the data.
+      The command will receive the data as standard input via a pipe. So it
+      must support this (gzip and bzip2 come to mind...).
+
+      As the command is used as first parameter to Popen, it must be specified
+      as list!
+
+      Examples:
+
+            * ``['gzip']``
+            * ``['gzip', '-5']``
 
    **ignore_dbs**
       A list of databases to ignore (mostly useful when using ``'*'`` as
@@ -70,6 +83,7 @@ Configuration Example
          host = 'localhost',
          user = 'backup',
          database = '*', # using '*' will dump all dbs
+         compress_command = ['gzip'],
          ignore_dbs = ['my_test_db'],
          port = 5432,
          pg_dump_params = "-Ft -c",
@@ -127,10 +141,15 @@ API_VERSION = (2,0)
 CONFIG = {}
 SOURCE = {}
 
+FORMAT_PLAIN = 0
+FORMAT_TAR = 1
+FORMAT_CUSTOM = 2
+
 def init(source):
    CONFIG.update(source['config'])
    SOURCE.update(source)
    CONFIG.setdefault('ignore_dbs', [])
+   CONFIG.setdefault('compress_command', [])
 
    LOG.debug("Initialised '%s' with %r" % ( __name__, CONFIG))
 
@@ -168,24 +187,79 @@ def get_params(command):
       out.extend( shlex.split(CONFIG[key]) )
    return out
 
+def get_format_type(command):
+   """
+   Try to guess the dump format by inspecting the command elements
+   """
+   format_string = ""
+
+   for i,element in enumerate(command):
+
+      # the format was specified as a sepearate element
+      if element == '-F' or element == '--format':
+         format_string = command[i+1]
+         break
+
+      # the format was specified using the abbreviated form (one element)
+      if element.startswith('-F') and len(element) == 3:
+         format_string = element[-1]
+         break
+
+   if format_string in ('c', 'custom'):
+      return FORMAT_CUSTOM
+   elif format_string in ('t', 'tar'):
+      return FORMAT_TAR
+   else:
+      return FORMAT_PLAIN
+
 def dump_one_db(staging_area, dbname):
    LOG.info("Dumping %s" % dbname)
    command = [ 'pg_dump', '-w' ]
    command.extend( get_params("pg_dump") )
    command.append( dbname )
 
-   p1 = Popen( command, stdout=PIPE, stderr=PIPE )
-   p2 = Popen( "gzip", stdin=p1.stdout, stdout=open(
-      join(staging_area, "%s.gz" % dbname), "wb"), stderr=PIPE )
+   # change dump file suffix depending on dump type
+   dump_format = get_format_type(command)
+   if dump_format == FORMAT_TAR:
+      file_suffix = 'tar'
+   elif dump_format == FORMAT_CUSTOM:
+      file_suffix = 'c'
+   else:
+      file_suffix = 'sql'
 
-   p1.wait()
-   p2.wait()
+   filename = "%s.%s" % (dbname, file_suffix)
 
-   if p1.returncode != 0:
-      LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
+   if CONFIG['compress_command']:
 
-   if p2.returncode != 0:
-      LOG.error("Error while running gzip: %s" % p2.stderr.read())
+      if CONFIG['compress_command'][0] == 'gzip':
+         compress_suffix = 'gz'
+      elif CONFIG['compress_command'][0] == 'bzip2':
+         compress_suffix = 'bz2'
+      elif CONFIG['compress_command'][0] == 'compress':
+         compress_suffix = 'z'
+      else:
+         compress_suffix = CONFIG['compress_command'][0]
+
+      p1 = Popen( command, stdout=PIPE, stderr=PIPE )
+      p2 = Popen( CONFIG['compress_command'], stdin=p1.stdout, stdout=open(
+         join(staging_area, "%s.%s" % (filename, compress_suffix)), "wb"),
+         stderr=PIPE )
+
+      p1.wait()
+      p2.wait()
+
+      if p1.returncode != 0:
+        LOG.error("Error while running pg_dump: %s" % p1.stderr.read())
+
+      if p2.returncode != 0:
+        LOG.error("Error while running gzip: %s" % p2.stderr.read())
+
+   else:
+      target_file = join(staging_area, "%s" % filename)
+      p1 = Popen( command + ['-f', target_file] )
+      stdout, stderr = p1.communicate()
+      if p1.returncode != 0:
+        LOG.error("Error while running pg_dump: %s" % stderr)
 
 def dump_globals(staging_area):
    LOG.info("Dumping posgtres globals")

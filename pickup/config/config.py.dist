@@ -4,15 +4,13 @@ Example config file.
 The config is a standard python script. This will give you the full power of
 python to set the different varaiables. Examples are:
 
-   - The use of the timedelta class
+   - The use of the timedelta parameters
    - Variable replacement with THE_BACKUP_DIR
 """
 
 
-from datetime import timedelta
-
 # Config version (major, minor)
-CONFIG_VERSION = (2,0)
+CONFIG_VERSION = (2,1)
 
 # A custom variable. Not used by the application itself, but used here, in the config script!
 THE_BACKUP_DIR = "/var/backups/data"
@@ -92,7 +90,7 @@ TARGETS = [
       config = dict(
          # retention: how long is old data kept. The value is used as keyword
          # arguments dict for datetime.timedelta
-         retention = timedelta(days=7),
+         retention = {days: 7},
          path = THE_BACKUP_DIR,
          ),
       ),
@@ -111,7 +109,7 @@ TARGETS = [
          username="ftpuser",
          password="asis! Light!",
          remote_folder="backups",
-         retention = timedelta(days=20),
+         retention = {days: 20},
          )
       ),
 ]

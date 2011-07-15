@@ -22,7 +22,7 @@
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from optparse import OptionParser
-from os.path import exists, abspath, join, dirname
+from os.path import exists, abspath, join, dirname, expanduser
 from shutil import rmtree
 import logging
 import os
@@ -262,6 +262,9 @@ def get_lock_file():
     """
     Returns a lock file.
     """
+    if OPTIONS.pidfile:
+        return expanduser(OPTIONS.pidfile)
+
     if os.name == 'posix':
         return '/var/run/pickup.pid'
     elif os.name == 'nt':
@@ -368,6 +371,12 @@ def main():
 
 def parse_cmd_args():
     parser = OptionParser()
+    parser.add_option("-p", "--pid-file", dest="pidfile",
+                            help=("Store the PID of the process in FILE. "
+                                "Defaults to /var/run/pickup.pid (Posix) or "
+                                "%APPDATA%/pickup/pickup.pid (Windows)"),
+                            action="store", default=None,
+                            metavar = "FILE")
     parser.add_option("-c", "--config", dest="config",
                             help="The config file to use",
                             action="store", default="config")
